@@ -7,8 +7,10 @@ async function initPyodide() {
   });
   await pyodide.loadPackage(['pandas', 'numpy', 'matplotlib']);
 
-  // Setup matplotlib for inline rendering
+  // Suppress pyarrow warning and setup matplotlib
   await pyodide.runPythonAsync(`
+import warnings
+warnings.filterwarnings("ignore", message=".*Pyarrow.*")
 import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
