@@ -3,27 +3,27 @@ import type { MissionStep } from '../index';
 export const steps: MissionStep[] = [
   {
     type: 'intro',
-    title: 'Les chiffres peuvent-ils mentir ?',
-    content: `**Un même jeu de données peut raconter des histoires très différentes selon comment on le présente.**
+    title: 'Les stats du tennis peuvent-elles mentir ?',
+    content: `**Un même palmarès peut raconter des histoires très différentes selon comment on le présente.**
 
-Les statistiques et les graphiques sont des outils puissants — mais ils peuvent aussi induire en erreur, volontairement ou non.
+Djokovic est-il vraiment le GOAT ? Sinner est-il déjà meilleur qu'Alcaraz ? Les chiffres semblent donner des réponses claires… mais attention aux pièges !
 
-Dans cette mission, tu vas apprendre à repérer les pièges courants et à créer des visualisations honnêtes.
+Tu vas explorer un dataset de **25 joueurs et joueuses de tennis** pour apprendre à repérer les graphiques trompeurs et comprendre la différence entre moyenne et médiane.
 
 **Ce que tu vas apprendre :**
 - La différence entre moyenne et médiane
 - Repérer un graphique trompeur
 - L'impact des valeurs extrêmes
-- Créer des visualisations fiables`,
+- Créer des visualisations honnêtes`,
   },
   {
     type: 'hypothesis',
     title: 'Ton intuition',
     content: `Regarde cette affirmation :
 
-*"La température moyenne a augmenté de 0.5°C en 10 ans"*
+*"Djokovic a 84% de victoires et Alcaraz seulement 81%. Djokovic est donc clairement meilleur."*
 
-**Est-ce alarmant ? Rassurant ? Ça dépend ?**
+**Est-ce aussi simple que ça ? Qu'est-ce qui pourrait rendre cette comparaison trompeuse ?**
 
 Note ton ressenti — tu verras comment la présentation change tout.`,
   },
@@ -34,221 +34,249 @@ Note ton ressenti — tu verras comment la présentation change tout.`,
 
 **La médiane** est la valeur du milieu quand on trie les données. Elle résiste mieux aux extrêmes.
 
-**Exemple :** Salaires dans une startup de 5 personnes :
-- Employés : 2 000€, 2 200€, 2 500€, 2 800€
-- PDG : 15 000€
+**Exemple tennis :** Aces par match dans un tournoi :
+- Matchs normaux : 5, 6, 7, 8, 7
+- Un match fou : 35 aces
 
-→ **Moyenne** : 4 900€ (le PDG tire tout vers le haut)
-→ **Médiane** : 2 500€ (reflète mieux la réalité du groupe)
+→ **Moyenne** : 11.3 aces (le match fou tire tout vers le haut)
+→ **Médiane** : 7 aces (reflète mieux la réalité habituelle)
 
 Quand tu lis "en moyenne", demande-toi toujours : **y a-t-il des valeurs extrêmes qui faussent le calcul ?**`,
   },
   {
     type: 'code',
-    title: 'Moyenne vs Médiane en pratique',
-    content: `Explore les températures et compare moyenne et médiane.`,
+    title: 'Explore les stats du tennis',
+    content: `Charge le dataset et compare les joueurs. Qui a le meilleur pourcentage de victoires ? Le plus d'aces ?`,
     code: {
       decouverte: `import pandas as pd
-import numpy as np
 
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
-print("📊 Températures moyennes par ville :")
-print(df.head(10))
+print("🎾 Dataset tennis :")
+print(df[['joueur', 'titres_grand_chelem', 'pourcentage_victoires', 'aces_par_match']].head(10))
 
-# Moyenne et médiane pour chaque ville
-for ville in df['ville'].unique():
-    data = df[df['ville'] == ville]['temperature']
-    moy = data.mean()
-    med = data.median()
-    print(f"\\n🏙️ {ville}:")
-    print(f"   Moyenne : {moy:.1f}°C")
-    print(f"   Médiane : {med:.1f}°C")
-    if abs(moy - med) > 1:
-        print(f"   ⚠️ Écart important ! Des valeurs extrêmes influencent la moyenne.")`,
+# Stats globales
+print(f"\\n📊 {df.shape[0]} joueurs/joueuses")
+print(f"\\n🏆 Moyenne de Grand Chelems : {df['titres_grand_chelem'].mean():.1f}")
+print(f"📊 Médiane de Grand Chelems : {df['titres_grand_chelem'].median():.1f}")
+print(f"⚠️ Écart important ! Quelques légendes tirent la moyenne vers le haut.")
+
+# Top 5 victoires
+top = df.nlargest(5, 'pourcentage_victoires')[['joueur', 'pourcentage_victoires', 'titres_grand_chelem']]
+print(f"\\n🏅 Top 5 pourcentage de victoires :")
+for _, row in top.iterrows():
+    print(f"   {row['joueur']:25s} {row['pourcentage_victoires']}% ({int(row['titres_grand_chelem'])} GC)")`,
       exploratrice: `import pandas as pd
 
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
 # Affiche les premières lignes
-print(df.head())
+print(df[['joueur', 'titres_grand_chelem', 'pourcentage_victoires']].head(10))
 
-# Pour chaque ville, calcule la moyenne et la médiane
-for ville in df['ville'].unique():
-    data = df[df['ville'] == ville]['temperature']
-    moy = data.___()
-    med = data.___()
-    print(f"\\n{ville}: Moyenne={moy:.1f}°C, Médiane={med:.1f}°C")`,
-      experte: `# Charge temperatures.csv
-# Compare moyenne et médiane par ville
-# Identifie les cas où l'écart est significatif
-# Explique pourquoi dans chaque cas
+# Calcule moyenne et médiane des Grand Chelems
+moy = df['titres_grand_chelem'].___()
+med = df['titres_grand_chelem'].___()
+print(f"\\nMoyenne GC : {moy:.1f}")
+print(f"Médiane GC : {med:.1f}")
+
+# Top 5 par pourcentage de victoires
+top = df.nlargest(5, '___')
+print("\\n🏅 Top 5 :")
+print(top[['joueur', 'pourcentage_victoires']])`,
+      experte: `# Charge tennis.csv et explore :
+# 1. Compare moyenne et médiane des Grand Chelems — pourquoi l'écart ?
+# 2. Top 5 joueurs par % victoires
+# 3. Compare hommes et femmes (indices : cherche dans les noms ou crée un filtre)
+# 4. Qui a le plus d'aces par match ? Est-ce corrélé aux victoires ?
 
 import pandas as pd
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
 `,
     },
     hints: [
       '.mean() calcule la moyenne, .median() calcule la médiane',
-      'Un écart important entre moyenne et médiane signale des valeurs extrêmes',
+      'df.nlargest(5, "colonne") renvoie les 5 plus grandes valeurs',
     ],
     validation: { type: 'output-contains', expected: 'Moyenne' },
   },
   {
     type: 'code',
     title: 'L\'art du graphique trompeur',
-    content: `Un même graphique peut donner une impression très différente selon les axes. Compare ces deux versions.`,
+    content: `Un même classement peut paraître écrasant ou serré selon comment tu dessines les axes. Compare ces deux versions.`,
     code: {
       decouverte: `import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("temperatures.csv")
-paris = df[df['ville'] == 'Paris'].sort_values('mois')
+df = pd.read_csv("tennis.csv")
+top6 = df.nlargest(6, 'pourcentage_victoires')
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
-# Graphique TROMPEUR : axe Y tronqué
-ax1.plot(paris['mois'], paris['temperature'], 'r-o', linewidth=2)
-ax1.set_ylim(14, 17)  # Axe tronqué !
-ax1.set_title('😱 ALERTE : explosion des températures !', fontsize=11)
-ax1.set_xlabel('Mois')
-ax1.set_ylabel('Température (°C)')
-ax1.grid(True, alpha=0.3)
+# Graphique TROMPEUR : axe tronqué
+ax1.barh(top6['joueur'], top6['pourcentage_victoires'], color='#ef4444')
+ax1.set_xlim(60, 86)
+ax1.set_title('😱 Djokovic ÉCRASE tout le monde !', fontsize=11)
+ax1.set_xlabel('% victoires')
+ax1.invert_yaxis()
 
-# Graphique HONNÊTE : axe Y complet
-ax2.plot(paris['mois'], paris['temperature'], 'b-o', linewidth=2)
-ax2.set_ylim(0, 40)  # Axe complet
-ax2.set_title('📊 Vue complète des températures', fontsize=11)
-ax2.set_xlabel('Mois')
-ax2.set_ylabel('Température (°C)')
-ax2.grid(True, alpha=0.3)
+# Graphique HONNÊTE : axe complet
+ax2.barh(top6['joueur'], top6['pourcentage_victoires'], color='#6366f1')
+ax2.set_xlim(0, 100)
+ax2.set_title('📊 Comparaison honnête', fontsize=11)
+ax2.set_xlabel('% victoires')
+ax2.invert_yaxis()
 
 plt.tight_layout()
 plt.show()
 
 print("👆 Mêmes données, impression totalement différente !")
-print("L'axe tronqué à gauche exagère visuellement les variations.")`,
+print("À gauche, l'axe commence à 60% → les écarts paraissent énormes.")
+print("À droite, l'axe va de 0 à 100% → on voit que tous sont excellents.")`,
       exploratrice: `import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("temperatures.csv")
-paris = df[df['ville'] == 'Paris'].sort_values('mois')
+df = pd.read_csv("tennis.csv")
+top6 = df.nlargest(6, 'pourcentage_victoires')
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
-# Graphique trompeur : utilise set_ylim() pour tronquer l'axe
-ax1.plot(paris['mois'], paris['temperature'], 'r-o')
-ax1.set_ylim(___, ___)  # Choisis un intervalle très serré
+# Graphique trompeur : tronque l'axe X
+ax1.barh(top6['joueur'], top6['pourcentage_victoires'], color='#ef4444')
+ax1.set_xlim(___, ___)  # Choisis un intervalle serré
 ax1.set_title('Version trompeuse')
+ax1.invert_yaxis()
 
 # Graphique honnête : axe complet
-ax2.plot(paris['mois'], paris['temperature'], 'b-o')
-ax2.set_ylim(___, ___)  # De 0 à 40
+ax2.barh(top6['joueur'], top6['pourcentage_victoires'], color='#6366f1')
+ax2.set_xlim(___, ___)  # De 0 à 100
 ax2.set_title('Version honnête')
+ax2.invert_yaxis()
 
 plt.tight_layout()
 plt.show()`,
-      experte: `# Crée deux graphiques côte à côte avec les températures de Paris :
+      experte: `# Crée deux graphiques côte à côte avec les % de victoires :
 # 1. Un graphique volontairement trompeur (axe tronqué)
-# 2. Le même graphique mais honnête
-# Explique la différence en print()
+# 2. Le même mais honnête
+# 3. Explique en print() ce qui change visuellement
 
 import pandas as pd
 import matplotlib.pyplot as plt
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
 `,
     },
     hints: [
-      'ax.set_ylim(min, max) définit les bornes de l\'axe Y',
-      'Un axe de 14 à 17 exagère les variations ; un axe de 0 à 40 montre le contexte réel',
+      'ax.set_xlim(min, max) définit les bornes de l\'axe X',
+      'Un axe de 60 à 86 exagère les différences ; de 0 à 100 donne le contexte',
     ],
     validation: { type: 'no-error' },
   },
   {
     type: 'challenge',
-    title: 'Défi : Détecte le piège !',
-    content: `Crée une visualisation qui compare **honnêtement** les températures de toutes les villes, avec la moyenne ET la médiane visibles.`,
+    title: 'Défi : Alcaraz vs Sinner',
+    content: `Crée une **comparaison honnête et visuelle** entre Alcaraz et Sinner sur plusieurs critères : victoires, Grand Chelems, aces, taille, âge.
+
+Qui est "meilleur" ? Ça dépend de quel critère !`,
     code: {
       decouverte: `import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
-# Calculer moyenne et médiane par ville
-stats = df.groupby('ville')['temperature'].agg(['mean', 'median']).round(1)
-stats = stats.sort_values('mean')
+# Extraire Alcaraz et Sinner
+alcaraz = df[df['joueur'] == 'Carlos Alcaraz'].iloc[0]
+sinner = df[df['joueur'] == 'Jannik Sinner'].iloc[0]
 
-# Graphique comparatif
-x = np.arange(len(stats))
+# Critères à comparer
+criteres = ['pourcentage_victoires', 'titres_grand_chelem', 'aces_par_match', 'taille_cm', 'points_classement']
+labels = ['% Victoires', 'Grand Chelems', 'Aces/match', 'Taille (cm)', 'Points ATP']
+
+vals_a = [alcaraz[c] for c in criteres]
+vals_s = [sinner[c] for c in criteres]
+
+x = np.arange(len(labels))
 width = 0.35
 
-plt.figure(figsize=(10, 6))
-plt.bar(x - width/2, stats['mean'], width, label='Moyenne', color='#6366f1')
-plt.bar(x + width/2, stats['median'], width, label='Médiane', color='#06b6d4')
-plt.xticks(x, stats.index, rotation=45, ha='right')
-plt.ylabel('Température (°C)')
-plt.title('Moyenne vs Médiane des températures par ville')
-plt.legend()
-plt.ylim(0, max(stats['mean'].max(), stats['median'].max()) * 1.2)
+fig, ax = plt.subplots(figsize=(10, 6))
+bars1 = ax.bar(x - width/2, vals_a, width, label='Alcaraz', color='#ef4444')
+bars2 = ax.bar(x + width/2, vals_s, width, label='Sinner', color='#6366f1')
+
+ax.set_xticks(x)
+ax.set_xticklabels(labels, rotation=15, ha='right')
+ax.set_title('Alcaraz vs Sinner — Qui est le meilleur ?')
+ax.legend()
+
 plt.tight_layout()
 plt.show()
 
-# Verdict
-for ville in stats.index:
-    diff = abs(stats.loc[ville, 'mean'] - stats.loc[ville, 'median'])
-    if diff > 1:
-        print(f"⚠️ {ville} : écart de {diff:.1f}°C — des valeurs extrêmes influencent la moyenne")
-    else:
-        print(f"✅ {ville} : moyenne et médiane proches ({diff:.1f}°C d'écart)")`,
+print("⚠️ Attention ! Ce graphique mélange des échelles très différentes.")
+print("   Taille en cm (~180) et Grand Chelems (~3) sur le même axe = trompeur !")
+print("\\n💡 Une comparaison honnête normaliserait les valeurs ou utiliserait")
+print("   des graphiques séparés pour chaque critère.")
+print(f"\\n📊 Verdict : Alcaraz mène sur {sum(1 for a, s in zip(vals_a, vals_s) if a > s)} critères,")
+print(f"   Sinner sur {sum(1 for a, s in zip(vals_a, vals_s) if s > a)}.")
+print("   Le 'meilleur' dépend de ce qu'on mesure !")`,
       exploratrice: `import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
-# Calcule moyenne et médiane par ville
-stats = df.groupby('ville')['temperature'].agg(['___', '___'])
+alcaraz = df[df['joueur'] == 'Carlos Alcaraz'].iloc[0]
+sinner = df[df['joueur'] == 'Jannik Sinner'].iloc[0]
 
-# Crée un graphique comparatif avec des barres groupées
-# Indice : utilise plt.bar() deux fois avec un décalage
+# Choisis 4 critères à comparer
+criteres = ['pourcentage_victoires', '___', '___', '___']
 
-`,
-      experte: `# Compare honnêtement les températures de toutes les villes
-# Montre moyenne et médiane côte à côte
-# Identifie les villes où l'écart est suspect
+vals_a = [alcaraz[c] for c in criteres]
+vals_s = [sinner[c] for c in criteres]
+
+x = np.arange(len(criteres))
+plt.figure(figsize=(10, 6))
+plt.bar(x - 0.2, vals_a, 0.35, label='Alcaraz', color='#ef4444')
+plt.bar(x + 0.2, vals_s, 0.35, label='Sinner', color='#6366f1')
+plt.xticks(x, criteres, rotation=20)
+plt.legend()
+plt.title('Alcaraz vs Sinner')
+plt.show()`,
+      experte: `# Compare Alcaraz et Sinner de manière honnête :
+# 1. Choisis au moins 5 critères pertinents
+# 2. Normalise les valeurs (0-100) pour une comparaison juste
+# 3. Crée un graphique radar ou des barres groupées
+# 4. Conclus : qui est "meilleur" et pourquoi c'est une question piège
 
 import pandas as pd
 import matplotlib.pyplot as plt
-df = pd.read_csv("temperatures.csv")
+df = pd.read_csv("tennis.csv")
 
 `,
     },
     hints: [
-      'df.groupby("ville")["temperature"].agg(["mean", "median"]) calcule les deux en une fois',
-      'Pour des barres groupées, décale la position : x - width/2 et x + width/2',
+      'df[df["joueur"] == "Nom"].iloc[0] extrait une ligne comme un dictionnaire',
+      'Attention aux échelles : comparer des cm et des titres sur le même axe est trompeur',
     ],
     validation: { type: 'no-error' },
     explanation: `**Ce qu'on a appris :**
-- La **moyenne** peut être trompeuse quand il y a des valeurs extrêmes
-- La **médiane** est plus robuste mais moins connue
+- La **moyenne** peut être trompeuse quand il y a des valeurs extrêmes (le Big 3 fausse la moyenne des Grand Chelems)
 - Un **axe tronqué** exagère visuellement les différences
-- Toujours vérifier l'échelle des axes et se demander si la visualisation est honnête`,
+- Comparer des **échelles différentes** sur un même graphique est trompeur
+- Le "meilleur" joueur dépend entièrement du **critère choisi**
+- Toujours vérifier : l'axe commence-t-il à zéro ? Les échelles sont-elles comparables ?`,
   },
   {
     type: 'reflect',
     title: 'Esprit critique activé',
-    content: `**Les chiffres ne mentent pas, mais on peut leur faire dire n'importe quoi.**
+    content: `**Les stats du tennis ne mentent pas, mais on peut leur faire dire n'importe quoi.**
 
-Quand tu lis une statistique ou un graphique, pose-toi ces questions :
-1. L'axe Y commence-t-il à zéro ?
-2. Utilise-t-on la moyenne ou la médiane ? Pourquoi ?
-3. L'échantillon est-il représentatif ?
-4. Qui a produit ce graphique et dans quel but ?
+La prochaine fois que tu vois un débat Djokovic vs Nadal vs Federer :
+1. Regarde **quel critère** est utilisé (Grand Chelems ? % victoires ? Semaines n°1 ?)
+2. Vérifie si l'axe **commence à zéro**
+3. Demande-toi si la **période** de comparaison est juste (un joueur en fin de carrière vs un débutant)
+4. Cherche la **médiane** en plus de la moyenne
 
-Ces réflexes te protègeront des manipulations statistiques, qu'elles soient volontaires ou non.`,
+Ces réflexes s'appliquent partout : économie, santé, réseaux sociaux, politique…`,
   },
   {
     type: 'complete',
@@ -257,10 +285,13 @@ Ces réflexes te protègeront des manipulations statistiques, qu'elles soient vo
 
 **Ce que tu sais faire :**
 - ✅ Distinguer moyenne et médiane
-- ✅ Repérer un graphique trompeur
+- ✅ Repérer un graphique trompeur (axe tronqué, échelles mélangées)
 - ✅ Comprendre l'impact des valeurs extrêmes
 - ✅ Créer des visualisations honnêtes
+- ✅ Comparer des données avec esprit critique
 
-**Badge débloqué : 🏅 Détective des statistiques**`,
+**Badge débloqué : 🏅 Détective des statistiques**
+
+Prochaine mission : programme ton propre outil d'analyse des races de chats !`,
   },
 ];

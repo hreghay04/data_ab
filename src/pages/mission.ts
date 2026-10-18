@@ -53,9 +53,12 @@ export async function renderMission(id: string): Promise<void> {
       datasets[currentMission.meta.dataset] = content;
     } catch { /* dataset load error — will show in execution */ }
   }
-  // Also load temperatures for mission-02
-  if (id === 'mission-02') {
-    try { datasets['temperatures.csv'] = await loadDataset('temperatures.csv'); } catch {}
+  // Load additional datasets that missions may reference
+  const allDatasets = ['kpop.csv', 'tennis.csv', 'chats.csv'];
+  for (const ds of allDatasets) {
+    if (!datasets[ds]) {
+      try { datasets[ds] = await loadDataset(ds); } catch {}
+    }
   }
 
   // Restore saved step or start from 0

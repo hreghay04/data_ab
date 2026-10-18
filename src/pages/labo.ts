@@ -8,7 +8,7 @@ export async function renderLabo(): Promise<void> {
   const app = document.getElementById('app')!;
 
   // Preload datasets
-  for (const name of ['chansons.csv', 'temperatures.csv']) {
+  for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv']) {
     try { datasets[name] = await loadDataset(name); } catch {}
   }
 
@@ -31,15 +31,15 @@ export async function renderLabo(): Promise<void> {
           <!-- Left: editor -->
           <div style="display:flex;flex-direction:column;gap:12px">
             <div style="font-size:0.8rem;color:var(--text-tertiary);margin-bottom:4px">
-              📂 Datasets disponibles : <code>chansons.csv</code>, <code>temperatures.csv</code>
+              📂 Datasets disponibles : <code>kpop.csv</code>, <code>tennis.csv</code>, <code>chats.csv</code>
             </div>
             <textarea id="code-editor"
               style="flex:1;min-height:400px;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:14px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-md);resize:vertical;tab-size:4;line-height:1.5"
               spellcheck="false">import pandas as pd
 import matplotlib.pyplot as plt
 
-# Charge un dataset
-df = pd.read_csv("chansons.csv")
+# Charge un dataset (kpop.csv, tennis.csv ou chats.csv)
+df = pd.read_csv("kpop.csv")
 
 # Explore !
 print(df.head())
@@ -141,15 +141,16 @@ function bindLaboEvents(): void {
       editor.value = `import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("chansons.csv")
+df = pd.read_csv("kpop.csv")
 
-# Popularité moyenne par genre
-pop = df.groupby('genre')['popularite'].mean().sort_values()
+# Streams moyens par groupe K-pop
+streams = df.groupby('groupe')['streams_millions'].mean().sort_values()
 
-plt.figure(figsize=(8, 5))
-plt.barh(pop.index, pop.values, color='#6366f1')
-plt.xlabel('Popularité moyenne')
-plt.title('Popularité par genre musical')
+plt.figure(figsize=(9, 7))
+colors = ['#ff6b9d' if g in ['BLACKPINK','NewJeans','IVE','aespa','G-IDLE','LE SSERAFIM','NMIXX','IZ*ONE'] else '#6366f1' for g in streams.index]
+plt.barh(streams.index, streams.values, color=colors)
+plt.xlabel('Streams moyens (millions)')
+plt.title('Classement K-pop par streams')
 plt.tight_layout()
 plt.show()`;
     }
