@@ -1,13 +1,40 @@
 import { renderHeader, bindHeaderEvents } from '../components/header';
 import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
 import { loadDataset } from '../missions/index';
+import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
 
 let datasets: Record<string, string> = {};
 
+const DEFAULT_CODE = `import pandas as pd
+import matplotlib.pyplot as plt
+
+# Charge un dataset (kpop.csv, tennis.csv ou chats.csv)
+df = pd.read_csv("kpop.csv")
+
+# Explore !
+print(df.head())
+print(f"\\n{df.shape[0]} lignes, {df.shape[1]} colonnes")`;
+
+const EXAMPLE_CODE = `import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("kpop.csv")
+
+# Streams moyens par groupe K-pop
+streams = df.groupby('groupe')['streams_millions'].mean().sort_values()
+
+plt.figure(figsize=(9, 7))
+colors = ['#ff6b9d' if g in ['BLACKPINK','NewJeans','IVE','aespa','G-IDLE','LE SSERAFIM','NMIXX','IZ*ONE'] else '#6366f1' for g in streams.index]
+plt.barh(streams.index, streams.values, color=colors)
+plt.xlabel('Streams moyens (millions)')
+plt.title('Classement K-pop par streams')
+plt.tight_layout()
+plt.show()`;
+
 export async function renderLabo(): Promise<void> {
+  destroyEditor();
   const app = document.getElementById('app')!;
 
-  // Preload datasets
   for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv']) {
     try { datasets[name] = await loadDataset(name); } catch {}
   }
@@ -15,10 +42,10 @@ export async function renderLabo(): Promise<void> {
   app.innerHTML = `
     ${renderHeader('labo')}
     <main class="page">
-      <div style="max-width:1400px;margin:0 auto;padding:16px 24px">
+      <div style="max-width:1400px;margin:0 auto;padding:16px 24px" class="fade-in">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div>
-            <h1 style="font-size:1.3rem;font-weight:800">🧪 Laboratoire Python</h1>
+            <h1 style="font-size:1.4rem;font-weight:800;letter-spacing:-0.01em">🧪 Laboratoire Python</h1>
             <p style="font-size:0.85rem;color:var(--text-secondary)">Expérimente librement avec Python, pandas et matplotlib</p>
           </div>
           <div style="display:flex;gap:8px">
@@ -30,30 +57,23 @@ export async function renderLabo(): Promise<void> {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:70vh" class="lab-layout">
           <!-- Left: editor -->
           <div style="display:flex;flex-direction:column;gap:12px">
-            <div style="font-size:0.8rem;color:var(--text-tertiary);margin-bottom:4px">
-              📂 Datasets disponibles : <code>kpop.csv</code>, <code>tennis.csv</code>, <code>chats.csv</code>
+            <div style="font-size:0.78rem;color:var(--text-tertiary);margin-bottom:4px;display:flex;gap:8px;flex-wrap:wrap">
+              📂 Datasets :
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">kpop.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">tennis.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">chats.csv</code>
             </div>
-            <textarea id="code-editor"
-              style="flex:1;min-height:400px;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:14px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-md);resize:vertical;tab-size:4;line-height:1.5"
-              spellcheck="false">import pandas as pd
-import matplotlib.pyplot as plt
-
-# Charge un dataset (kpop.csv, tennis.csv ou chats.csv)
-df = pd.read_csv("kpop.csv")
-
-# Explore !
-print(df.head())
-print(f"\\n{df.shape[0]} lignes, {df.shape[1]} colonnes")</textarea>
+            <div id="cm-labo-container" style="flex:1;min-height:400px;display:flex;flex-direction:column"></div>
             <div style="display:flex;gap:8px">
               <button class="btn btn-primary" id="btn-run" style="flex:1">▶️ Exécuter (Ctrl+Entrée)</button>
-              <button class="btn btn-secondary" id="btn-reset">🔄 Réinitialiser le moteur</button>
+              <button class="btn btn-secondary" id="btn-reset">🔄 Réinitialiser</button>
             </div>
-            <div id="engine-status" style="font-size:0.8rem;color:var(--text-tertiary);text-align:center"></div>
+            <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
           </div>
 
           <!-- Right: output -->
           <div style="display:flex;flex-direction:column;gap:12px">
-            <div id="output-area" class="card" style="flex:1;min-height:300px;max-height:50vh;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px">
+            <div id="output-area" class="card" style="flex:1;min-height:300px;max-height:50vh;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">
               <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici…</span>
             </div>
             <div id="plot-area" style="display:none">
@@ -66,28 +86,23 @@ print(f"\\n{df.shape[0]} lignes, {df.shape[1]} colonnes")</textarea>
   `;
 
   bindHeaderEvents();
+
+  const container = document.getElementById('cm-labo-container');
+  if (container) {
+    createCodeEditor(
+      container,
+      DEFAULT_CODE,
+      undefined,
+      () => { document.getElementById('btn-run')?.click(); }
+    );
+  }
+
   bindLaboEvents();
 }
 
 function bindLaboEvents(): void {
-  const editor = document.getElementById('code-editor') as HTMLTextAreaElement;
-
-  editor?.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
-      editor.selectionStart = editor.selectionEnd = start + 4;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('btn-run')?.click();
-    }
-  });
-
   document.getElementById('btn-run')?.addEventListener('click', async () => {
-    const code = editor?.value || '';
+    const code = getEditorCode();
     const output = document.getElementById('output-area')!;
     const plotArea = document.getElementById('plot-area')!;
     const plotImg = document.getElementById('plot-img') as HTMLImageElement;
@@ -121,12 +136,12 @@ function bindLaboEvents(): void {
 
   document.getElementById('btn-reset')?.addEventListener('click', () => {
     resetEngine();
-    document.getElementById('output-area')!.innerHTML = '<span style="color:var(--text-tertiary)">Moteur réinitialisé. Clique sur Exécuter pour relancer.</span>';
+    document.getElementById('output-area')!.innerHTML = '<span style="color:var(--text-tertiary)">Moteur réinitialisé.</span>';
     document.getElementById('plot-area')!.style.display = 'none';
   });
 
   document.getElementById('btn-export-py')?.addEventListener('click', () => {
-    const code = editor?.value || '';
+    const code = getEditorCode();
     const blob = new Blob([code], { type: 'text/x-python' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -137,23 +152,7 @@ function bindLaboEvents(): void {
   });
 
   document.getElementById('btn-example')?.addEventListener('click', () => {
-    if (editor) {
-      editor.value = `import pandas as pd
-import matplotlib.pyplot as plt
-
-df = pd.read_csv("kpop.csv")
-
-# Streams moyens par groupe K-pop
-streams = df.groupby('groupe')['streams_millions'].mean().sort_values()
-
-plt.figure(figsize=(9, 7))
-colors = ['#ff6b9d' if g in ['BLACKPINK','NewJeans','IVE','aespa','G-IDLE','LE SSERAFIM','NMIXX','IZ*ONE'] else '#6366f1' for g in streams.index]
-plt.barh(streams.index, streams.values, color=colors)
-plt.xlabel('Streams moyens (millions)')
-plt.title('Classement K-pop par streams')
-plt.tight_layout()
-plt.show()`;
-    }
+    setEditorCode(EXAMPLE_CODE);
   });
 
   onStatusChange((s) => {
@@ -161,7 +160,7 @@ plt.show()`;
     if (!el) return;
     const labels: Record<string, string> = {
       idle: '',
-      loading: '⏳ Chargement de Python (première fois : ~15 secondes)…',
+      loading: '⏳ Chargement de Python (première fois : ~15s)…',
       ready: '✅ Python prêt',
       running: '▶️ Exécution en cours…',
       error: '⚠️ Erreur — clique sur Réinitialiser',

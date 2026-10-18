@@ -12,14 +12,14 @@ export function renderHeader(activePage: string): string {
         <span>🔬 DATA LAB</span>
       </div>
       <nav class="header-nav">
-        <a href="#/" class="nav-link ${activePage === 'home' ? 'active' : ''}">Accueil</a>
-        <a href="#/parcours" class="nav-link ${activePage === 'parcours' ? 'active' : ''}">Parcours</a>
-        <a href="#/labo" class="nav-link ${activePage === 'labo' ? 'active' : ''}">Laboratoire</a>
+        <a href="#/" class="nav-link ${activePage === 'home' ? 'active' : ''}">🏠 Accueil</a>
+        <a href="#/parcours" class="nav-link ${activePage === 'parcours' ? 'active' : ''}">🗺️ Parcours</a>
+        <a href="#/labo" class="nav-link ${activePage === 'labo' ? 'active' : ''}">🧪 Labo</a>
       </nav>
       <div class="header-actions">
         <div class="xp-badge">⚡ ${progress.xp} XP</div>
         <div class="level-badge">Niv. ${progress.level}</div>
-        <span style="font-size:0.8rem;color:var(--text-tertiary)">${completed}/${total}</span>
+        <span style="font-size:0.78rem;color:var(--text-tertiary);font-weight:600">${completed}/${total}</span>
         <button class="theme-toggle" id="theme-toggle">${getThemeIcon()}</button>
       </div>
     </header>

@@ -2,7 +2,8 @@ import { renderHeader, bindHeaderEvents } from '../components/header';
 import { loadProgress, saveProgress, addXP, addBadge, unlockNextMission } from '../utils/storage';
 import { loadMission, loadDataset } from '../missions/index';
 import type { MissionData, MissionStep } from '../missions/index';
-import { initEngine, runPython, onStatusChange, getStatus, resetEngine } from '../engine/python-engine';
+import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
+import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
 
 let currentMission: MissionData | null = null;
 let currentStepIndex = 0;
@@ -18,9 +19,10 @@ export async function renderMission(id: string): Promise<void> {
     app.innerHTML = `
       ${renderHeader('parcours')}
       <main class="page"><div class="page-content" style="text-align:center;padding:80px 24px">
-        <h1>🔒 Mission verrouillée</h1>
+        <div style="font-size:4rem;margin-bottom:16px">🔒</div>
+        <h1 style="font-size:1.5rem;font-weight:800">Mission verrouillée</h1>
         <p style="color:var(--text-secondary);margin:16px 0">Termine les missions précédentes pour débloquer celle-ci.</p>
-        <a href="#/parcours" class="btn btn-primary">Retour au parcours</a>
+        <a href="#/parcours" class="btn btn-primary">← Retour au parcours</a>
       </div></main>
     `;
     bindHeaderEvents();
@@ -33,27 +35,24 @@ export async function renderMission(id: string): Promise<void> {
       ${renderHeader('parcours')}
       <main class="page"><div class="page-content" style="text-align:center;padding:80px 24px">
         <h1>Mission introuvable</h1>
-        <a href="#/parcours" class="btn btn-primary">Retour au parcours</a>
+        <a href="#/parcours" class="btn btn-primary">← Retour au parcours</a>
       </div></main>
     `;
     bindHeaderEvents();
     return;
   }
 
-  // Mark as in-progress
   if (mp.status === 'available') {
     mp.status = 'in-progress';
     saveProgress(progress);
   }
 
-  // Load datasets
   if (currentMission.meta.dataset) {
     try {
       const content = await loadDataset(currentMission.meta.dataset);
       datasets[currentMission.meta.dataset] = content;
-    } catch { /* dataset load error — will show in execution */ }
+    } catch {}
   }
-  // Load additional datasets that missions may reference
   const allDatasets = ['kpop.csv', 'tennis.csv', 'chats.csv'];
   for (const ds of allDatasets) {
     if (!datasets[ds]) {
@@ -61,7 +60,6 @@ export async function renderMission(id: string): Promise<void> {
     }
   }
 
-  // Restore saved step or start from 0
   currentStepIndex = 0;
   editorContent = mp.code || '';
 
@@ -69,6 +67,7 @@ export async function renderMission(id: string): Promise<void> {
 }
 
 function renderCurrentStep(missionId: string): void {
+  destroyEditor();
   const app = document.getElementById('app')!;
   const mission = currentMission!;
   const step = mission.steps[currentStepIndex];
@@ -76,31 +75,30 @@ function renderCurrentStep(missionId: string): void {
   const mp = progress.missions[missionId];
   const mode = mp.mode;
   const totalSteps = mission.steps.length;
-
   const stepPct = Math.round(((currentStepIndex + 1) / totalSteps) * 100);
 
   app.innerHTML = `
     ${renderHeader('parcours')}
     <main class="page">
-      <div style="max-width:1400px;margin:0 auto;padding:16px 24px">
+      <div style="max-width:1400px;margin:0 auto;padding:16px 24px" class="fade-in">
         <!-- Top bar -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div style="display:flex;align-items:center;gap:12px">
             <a href="#/parcours" class="btn btn-ghost btn-sm">← Parcours</a>
-            <h2 style="font-size:1.1rem;font-weight:700">${mission.meta.title}</h2>
+            <h2 style="font-size:1.05rem;font-weight:700">${mission.meta.title}</h2>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
-            <select id="mode-select" class="btn btn-secondary btn-sm" style="padding:6px 10px">
+            <select id="mode-select" class="btn btn-secondary btn-sm" style="padding:6px 12px;background:var(--bg-tertiary)">
               <option value="decouverte" ${mode === 'decouverte' ? 'selected' : ''}>🌱 Découverte</option>
               <option value="exploratrice" ${mode === 'exploratrice' ? 'selected' : ''}>🔍 Exploratrice</option>
               <option value="experte" ${mode === 'experte' ? 'selected' : ''}>⚡ Experte</option>
             </select>
-            <span style="font-size:0.8rem;color:var(--text-tertiary)">Étape ${currentStepIndex + 1}/${totalSteps}</span>
+            <span style="font-size:0.78rem;color:var(--text-tertiary);font-weight:600">Étape ${currentStepIndex + 1}/${totalSteps}</span>
           </div>
         </div>
 
         <!-- Progress -->
-        <div class="progress-bar" style="margin-bottom:20px;height:6px">
+        <div class="progress-bar" style="margin-bottom:20px;height:5px;border-radius:5px">
           <div class="progress-bar-fill" style="width:${stepPct}%"></div>
         </div>
 
@@ -111,45 +109,57 @@ function renderCurrentStep(missionId: string): void {
 
   bindHeaderEvents();
   bindMissionEvents(missionId);
+
+  if (step.type === 'code' || step.type === 'challenge') {
+    const container = document.getElementById('cm-editor-container');
+    if (container) {
+      const code = editorContent || step.code?.[mode as keyof typeof step.code] || step.code?.decouverte || '';
+      if (!editorContent) editorContent = code;
+      createCodeEditor(
+        container,
+        code,
+        (c) => { editorContent = c; },
+        () => { document.getElementById('btn-run')?.click(); }
+      );
+    }
+  }
 }
 
 function renderStepContent(step: MissionStep, mode: string, missionId: string): string {
   const contentHtml = markdownLite(step.content);
 
   if (step.type === 'code' || step.type === 'challenge') {
-    const code = step.code?.[mode as keyof typeof step.code] || step.code?.decouverte || '';
-    if (!editorContent) editorContent = code;
-
     return `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:500px" class="lab-layout">
         <!-- Left: instructions -->
         <div class="card" style="overflow-y:auto;max-height:70vh">
-          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:12px">${step.title}</h3>
-          <div class="mission-content">${contentHtml}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <span style="font-size:1.3rem">${step.type === 'challenge' ? '🏆' : '💻'}</span>
+            <h3 style="font-size:1.1rem;font-weight:700">${step.title}</h3>
+          </div>
+          <div class="mission-content" style="font-size:0.92rem;line-height:1.7">${contentHtml}</div>
           ${step.hints ? renderHints(step.hints) : ''}
-          ${step.explanation ? `<div id="explanation" style="display:none;margin-top:16px;padding:16px;background:var(--accent-light);border-radius:var(--radius-md)">
-            <strong>💡 Explication :</strong><br>${markdownLite(step.explanation)}
+          ${step.explanation ? `<div id="explanation" style="display:none;margin-top:16px;padding:16px;background:var(--accent-light);border-radius:var(--radius-md);border:1px solid rgba(99,102,241,0.1)">
+            <strong style="color:var(--accent)">💡 Explication :</strong><br><div style="margin-top:8px;font-size:0.9rem;line-height:1.6">${markdownLite(step.explanation)}</div>
           </div>` : ''}
         </div>
 
         <!-- Right: editor + output -->
         <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="position:relative;flex:1;min-height:250px">
-            <div style="position:absolute;top:8px;right:8px;z-index:5;display:flex;gap:6px">
-              <button class="btn btn-sm btn-ghost" id="btn-reset-code" title="Réinitialiser le code">🔄</button>
-              <button class="btn btn-sm btn-ghost" id="btn-export-code" title="Exporter en .py">💾</button>
+          <div style="position:relative;flex:1;min-height:250px;display:flex;flex-direction:column">
+            <div style="position:absolute;top:8px;right:8px;z-index:10;display:flex;gap:6px">
+              <button class="btn btn-sm btn-ghost" id="btn-reset-code" title="Réinitialiser" style="background:rgba(0,0,0,0.3);color:#aaa;border-radius:6px;font-size:0.75rem">🔄</button>
+              <button class="btn btn-sm btn-ghost" id="btn-export-code" title="Exporter" style="background:rgba(0,0,0,0.3);color:#aaa;border-radius:6px;font-size:0.75rem">💾</button>
             </div>
-            <textarea id="code-editor"
-              style="width:100%;height:100%;min-height:250px;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:14px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-md);resize:vertical;tab-size:4;line-height:1.5"
-              spellcheck="false">${escapeHtml(editorContent)}</textarea>
+            <div id="cm-editor-container" style="flex:1;display:flex;flex-direction:column"></div>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-primary" id="btn-run" style="flex:1">▶️ Exécuter</button>
-            <button class="btn btn-secondary" id="btn-stop" style="display:none">⏹️ Arrêter</button>
+            <button class="btn btn-primary" id="btn-run" style="flex:1">▶️ Exécuter (Ctrl+Entrée)</button>
+            <button class="btn btn-secondary" id="btn-stop" style="display:none">⏹️ Stop</button>
           </div>
-          <div id="engine-status" style="font-size:0.8rem;color:var(--text-tertiary);text-align:center"></div>
-          <div id="output-area" class="card" style="min-height:150px;max-height:400px;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px">
-            <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici après exécution…</span>
+          <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
+          <div id="output-area" class="card" style="min-height:120px;max-height:350px;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">
+            <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici…</span>
           </div>
           <div id="plot-area" style="display:none">
             <img id="plot-img" style="max-width:100%;border-radius:var(--radius-md);border:1px solid var(--border)" />
@@ -166,21 +176,25 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
   }
 
   // Non-code steps
+  const icons: Record<string, string> = { intro: '🚀', hypothesis: '🤔', learn: '📖', reflect: '💭', complete: '🎉' };
+  const icon = icons[step.type] || '📝';
+
   return `
-    <div style="max-width:700px;margin:0 auto">
-      <div class="card" style="padding:32px">
-        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:16px">${step.title}</h3>
-        <div class="mission-content" style="font-size:1rem;line-height:1.8">${contentHtml}</div>
+    <div style="max-width:700px;margin:0 auto" class="slide-up">
+      <div class="card" style="padding:36px">
+        <div style="font-size:2.5rem;margin-bottom:12px">${icon}</div>
+        <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:18px;letter-spacing:-0.01em">${step.title}</h3>
+        <div class="mission-content" style="font-size:1rem;line-height:1.8;color:var(--text-secondary)">${contentHtml}</div>
 
         ${step.type === 'hypothesis' ? `
           <textarea id="hypothesis-input" placeholder="Note ton hypothèse ici…"
-            style="width:100%;min-height:80px;margin-top:16px;padding:12px;border:1px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-sans);font-size:0.95rem;background:var(--bg-tertiary);color:var(--text-primary);resize:vertical"
+            style="width:100%;min-height:80px;margin-top:20px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-sans);font-size:0.95rem;background:var(--bg-tertiary);color:var(--text-primary);resize:vertical;transition:border-color 0.2s"
           >${escapeHtml(loadProgress().missions[missionId]?.hypothesisText || '')}</textarea>
         ` : ''}
 
         ${step.type === 'complete' ? `
-          <div style="text-align:center;margin-top:24px">
-            <button class="btn btn-primary" id="btn-complete" style="font-size:1.1rem;padding:16px 40px">
+          <div style="text-align:center;margin-top:28px">
+            <button class="btn btn-primary hero-cta" id="btn-complete">
               🎉 Terminer la mission
             </button>
           </div>
@@ -197,13 +211,13 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
 
 function renderHints(hints: string[]): string {
   return `
-    <div style="margin-top:16px">
+    <div style="margin-top:18px">
       ${hints.map((hint, i) => `
         <details style="margin-bottom:8px">
-          <summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:0.9rem;padding:8px 0">
+          <summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:0.88rem;padding:8px 0;transition:color 0.2s">
             💡 Indice ${i + 1}
           </summary>
-          <div style="padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);font-size:0.9rem;margin-top:4px;white-space:pre-wrap">${escapeHtml(hint)}</div>
+          <div style="padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);font-size:0.88rem;margin-top:4px;white-space:pre-wrap;line-height:1.6">${escapeHtml(hint)}</div>
         </details>
       `).join('')}
     </div>
@@ -214,7 +228,6 @@ function bindMissionEvents(missionId: string): void {
   const progress = loadProgress();
   const mp = progress.missions[missionId];
 
-  // Mode select
   document.getElementById('mode-select')?.addEventListener('change', (e) => {
     const newMode = (e.target as HTMLSelectElement).value as 'decouverte' | 'exploratrice' | 'experte';
     mp.mode = newMode;
@@ -223,7 +236,6 @@ function bindMissionEvents(missionId: string): void {
     renderCurrentStep(missionId);
   });
 
-  // Navigation
   document.getElementById('btn-prev')?.addEventListener('click', () => {
     if (currentStepIndex > 0) {
       saveCurrentCode(missionId);
@@ -242,29 +254,9 @@ function bindMissionEvents(missionId: string): void {
     }
   });
 
-  // Code editor
-  const editor = document.getElementById('code-editor') as HTMLTextAreaElement;
-  if (editor) {
-    editor.addEventListener('input', () => { editorContent = editor.value; });
-    editor.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
-        editor.selectionStart = editor.selectionEnd = start + 4;
-        editorContent = editor.value;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('btn-run')?.click();
-      }
-    });
-  }
-
   // Run
   document.getElementById('btn-run')?.addEventListener('click', async () => {
-    const code = (document.getElementById('code-editor') as HTMLTextAreaElement)?.value || '';
+    const code = getEditorCode();
     const output = document.getElementById('output-area')!;
     const plotArea = document.getElementById('plot-area')!;
     const plotImg = document.getElementById('plot-img') as HTMLImageElement;
@@ -296,12 +288,10 @@ function bindMissionEvents(missionId: string): void {
         plotImg.src = `data:image/png;base64,${result.plot}`;
       }
 
-      // Save code
       editorContent = code;
       saveCurrentCode(missionId);
       mp.attempts++;
       saveProgress(progress);
-
     } catch (err) {
       output.innerHTML = `<span style="color:var(--error)">❌ ${escapeHtml(String(err))}</span>`;
     }
@@ -310,31 +300,25 @@ function bindMissionEvents(missionId: string): void {
     btnStop.style.display = 'none';
   });
 
-  // Stop
   document.getElementById('btn-stop')?.addEventListener('click', () => {
     resetEngine();
-    document.getElementById('output-area')!.innerHTML = '<span style="color:var(--warning)">⏹️ Exécution arrêtée. Le moteur Python va redémarrer.</span>';
-    const btnRun = document.getElementById('btn-run') as HTMLButtonElement;
-    const btnStop = document.getElementById('btn-stop') as HTMLButtonElement;
-    btnRun.style.display = 'inline-flex';
-    btnStop.style.display = 'none';
+    document.getElementById('output-area')!.innerHTML = '<span style="color:var(--warning)">⏹️ Exécution arrêtée.</span>';
+    (document.getElementById('btn-run') as HTMLButtonElement).style.display = 'inline-flex';
+    (document.getElementById('btn-stop') as HTMLButtonElement).style.display = 'none';
   });
 
-  // Reset code
   document.getElementById('btn-reset-code')?.addEventListener('click', () => {
-    if (confirm('Réinitialiser le code ? Tu perdras tes modifications sur cette étape.')) {
+    if (confirm('Réinitialiser le code ?')) {
       const step = currentMission!.steps[currentStepIndex];
       const mode = mp.mode;
       const code = step.code?.[mode as keyof typeof step.code] || step.code?.decouverte || '';
       editorContent = code;
-      const editor = document.getElementById('code-editor') as HTMLTextAreaElement;
-      if (editor) editor.value = code;
+      setEditorCode(code);
     }
   });
 
-  // Export code
   document.getElementById('btn-export-code')?.addEventListener('click', () => {
-    const code = (document.getElementById('code-editor') as HTMLTextAreaElement)?.value || '';
+    const code = getEditorCode();
     const blob = new Blob([code], { type: 'text/x-python' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -344,7 +328,6 @@ function bindMissionEvents(missionId: string): void {
     URL.revokeObjectURL(url);
   });
 
-  // Complete mission
   document.getElementById('btn-complete')?.addEventListener('click', () => {
     const mission = currentMission!;
     mp.status = 'completed';
@@ -356,13 +339,11 @@ function bindMissionEvents(missionId: string): void {
     location.hash = '#/parcours';
   });
 
-  // Hypothesis save
   document.getElementById('hypothesis-input')?.addEventListener('input', (e) => {
     mp.hypothesisText = (e.target as HTMLTextAreaElement).value;
     saveProgress(progress);
   });
 
-  // Engine status
   onStatusChange((s) => {
     const el = document.getElementById('engine-status');
     if (!el) return;
@@ -393,7 +374,7 @@ function escapeHtml(str: string): string {
 function markdownLite(text: string): string {
   return text
     .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre style="background:var(--bg-code);color:var(--text-on-dark);padding:12px;border-radius:var(--radius-md);overflow-x:auto;font-size:0.85rem;margin:8px 0"><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;font-size:0.9em">$1</code>')
+    .replace(/`([^`]+)`/g, '<code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;font-size:0.88em">$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/^- (.+)/gm, '<li style="margin-left:16px">$1</li>')
