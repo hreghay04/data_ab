@@ -107,6 +107,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     ],
     duration: '~60 min',
   },
+  'mission-05': {
+    id: 'mission-05',
+    number: '05',
+    universe: 2,
+    title: 'Les séries longues font-elles les plus gros succès ?',
+    description: 'One Piece : 105 tomes, 516 millions de ventes. Mesure le lien, puis découvre pourquoi « corrélation » ne veut pas dire « cause ».',
+    badge: 'Chasseuse de corrélations',
+    xp: 70,
+    dataset: 'mangas.csv',
+    datasetSource: 'Nombre de tomes, année de parution et ventes : chiffres réels. Notes d\'action, romance et violence : synthétiques.',
+    objectives: [
+      'Calculer et interpréter un coefficient de corrélation',
+      'Tester la robustesse d\'un résultat en retirant les valeurs extrêmes',
+      'Distinguer corrélation, causalité inverse et facteur confondant',
+      'Comprendre qu\'une absence de lien est aussi un résultat',
+    ],
+    duration: '~50 min',
+  },
 };
 
 export async function loadMission(id: string): Promise<MissionData | null> {
