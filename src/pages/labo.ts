@@ -36,7 +36,7 @@ export async function renderLabo(): Promise<void> {
   destroyEditor();
   const app = document.getElementById('app')!;
 
-  for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv']) {
+  for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv', 'metiers.csv']) {
     try { datasets[name] = await loadDataset(name); } catch {}
   }
 

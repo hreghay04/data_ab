@@ -1,0 +1,45 @@
+metier,secteur,annees_etudes,salaire_debut,salaire_10ans,taux_emploi
+Data scientist,Tech,5,42000,62000,94
+Ingenieur IA,Tech,5,45000,70000,95
+Data analyst,Tech,5,36000,48000,92
+Developpeur web,Tech,5,38000,52000,93
+Technicien reseau,Tech,2,26000,36000,88
+Designer UX,Tech,5,35000,50000,85
+Actuaire,Finance,5,45000,72000,96
+Trader,Finance,5,50000,105000,90
+Comptable,Finance,3,30000,42000,93
+Expert-comptable,Finance,8,42000,75000,97
+Conseiller bancaire,Finance,3,28000,40000,90
+Medecin generaliste,Sante,9,58000,92000,99
+Dentiste,Sante,6,55000,90000,98
+Pharmacien,Sante,6,40000,60000,97
+Veterinaire,Sante,6,34000,50000,95
+Sage-femme,Sante,5,30000,40000,97
+Infirmier,Sante,3,26000,35000,98
+Kinesitherapeute,Sante,5,30000,45000,97
+Aide-soignant,Sante,1,21000,26000,95
+Psychologue,Sante,5,26000,34000,80
+Avocat,Droit,7,35000,72000,92
+Notaire,Droit,7,45000,82000,96
+Juriste d'entreprise,Droit,5,34000,50000,90
+Professeur des ecoles,Education,5,28000,34000,99
+Professeur agrege,Education,5,31000,40000,99
+Enseignant-chercheur,Education,8,30000,45000,88
+Chercheur CNRS,Education,8,28000,42000,85
+Journaliste,Medias,5,28000,38000,72
+Graphiste,Medias,3,24000,33000,70
+Community manager,Medias,3,26000,35000,78
+Traducteur,Medias,5,25000,35000,68
+Architecte,BTP,6,30000,48000,88
+Conducteur de travaux,BTP,3,32000,46000,94
+Electricien,BTP,2,24000,34000,93
+Plombier,BTP,2,24000,35000,94
+Mecanicien auto,Artisanat,2,23000,32000,90
+Boulanger,Artisanat,2,22000,28000,92
+Coiffeur,Artisanat,2,21000,25000,88
+Chef cuisinier,Artisanat,3,26000,45000,91
+Agriculteur,Agriculture,3,22000,30000,96
+Pilote de ligne,Transport,5,45000,100000,89
+Chef de projet marketing,Commerce,5,35000,52000,87
+Commercial B2B,Commerce,3,30000,48000,89
+Assistant social,Social,3,24000,30000,94

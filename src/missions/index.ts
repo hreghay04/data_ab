@@ -125,6 +125,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     ],
     duration: '~50 min',
   },
+  'mission-06': {
+    id: 'mission-06',
+    number: '06',
+    universe: 2,
+    title: 'Les études longues rapportent-elles vraiment plus ?',
+    description: 'Construis un modèle qui prédit un salaire à partir des années d\'études — puis découvre tout ce qu\'il ne voit pas.',
+    badge: 'Analyste prédictive',
+    xp: 70,
+    dataset: 'metiers.csv',
+    datasetSource: 'Ordres de grandeur indicatifs construits pour l\'exercice à partir de fourchettes publiques — ce ne sont pas des chiffres officiels. Sources réelles : ONISEP, APEC, INSEE.',
+    objectives: [
+      'Ajuster une régression linéaire avec np.polyfit',
+      'Interpréter une pente et un R² comme des quantités concrètes',
+      'Calculer des résidus et y repérer une variable manquante',
+      'Distinguer ce qu\'un modèle prédit pour un groupe de ce qu\'il vaut pour un individu',
+    ],
+    duration: '~55 min',
+  },
 };
 
 export async function loadMission(id: string): Promise<MissionData | null> {

@@ -54,7 +54,7 @@ export async function renderMission(id: string): Promise<void> {
       datasets[currentMission.meta.dataset] = content;
     } catch {}
   }
-  const allDatasets = ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv'];
+  const allDatasets = ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv', 'metiers.csv'];
   for (const ds of allDatasets) {
     if (!datasets[ds]) {
       try { datasets[ds] = await loadDataset(ds); } catch {}
