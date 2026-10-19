@@ -7,14 +7,24 @@ async function initPyodide() {
   });
   await pyodide.loadPackage(['pandas', 'numpy', 'matplotlib']);
 
-  // Suppress pyarrow warning and setup matplotlib
+  // Suppress warnings and setup matplotlib
   await pyodide.runPythonAsync(`
 import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", message=".*Pyarrow.*")
+warnings.filterwarnings("ignore", message=".*agg.*")
+
 import matplotlib
 matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import io, base64
+
+# Override plt.show to silently do nothing (plots are captured separately)
+_original_show = plt.show
+def _silent_show(*args, **kwargs):
+    pass
+plt.show = _silent_show
 
 def _datalab_show_plot():
     buf = io.BytesIO()
@@ -43,9 +53,13 @@ async function runCode(code, datasets) {
     }
   }
 
-  // Capture stdout/stderr
+  // Suppress warnings and capture stdout/stderr
   await pyodide.runPythonAsync(`
-import sys, io
+import sys, io, warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", message=".*Pyarrow.*")
+warnings.filterwarnings("ignore", message=".*agg.*")
 _stdout = io.StringIO()
 _stderr = io.StringIO()
 sys.stdout = _stdout
