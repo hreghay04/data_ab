@@ -4,6 +4,7 @@ import { loadMission, loadDataset } from '../missions/index';
 import type { MissionData, MissionStep } from '../missions/index';
 import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
+import { renderPlotArea, showPlot, hidePlot, bindPlotExport, slugify } from '../components/plot-export';
 
 let currentMission: MissionData | null = null;
 let currentStepIndex = 0;
@@ -109,6 +110,7 @@ function renderCurrentStep(missionId: string): void {
 
   bindHeaderEvents();
   bindMissionEvents(missionId);
+  bindPlotExport(() => `datalab-${slugify(mission.meta.title)}-${slugify(step.title)}`);
 
   if (step.type === 'code' || step.type === 'challenge') {
     const container = document.getElementById('cm-editor-container');
@@ -167,9 +169,7 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
           <div id="output-area" class="card" style="min-height:120px;max-height:350px;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">
             <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici…</span>
           </div>
-          <div id="plot-area" style="display:none">
-            <img id="plot-img" style="max-width:100%;border-radius:var(--radius-md);border:1px solid var(--border)" />
-          </div>
+          ${renderPlotArea()}
         </div>
       </div>
 
@@ -368,13 +368,11 @@ function bindMissionEvents(missionId: string): void {
   document.getElementById('btn-run')?.addEventListener('click', async () => {
     const code = getEditorCode();
     const output = document.getElementById('output-area')!;
-    const plotArea = document.getElementById('plot-area')!;
-    const plotImg = document.getElementById('plot-img') as HTMLImageElement;
     const btnRun = document.getElementById('btn-run') as HTMLButtonElement;
     const btnStop = document.getElementById('btn-stop') as HTMLButtonElement;
 
     output.innerHTML = '<span style="color:var(--accent)">⏳ Chargement de Python…</span>';
-    plotArea.style.display = 'none';
+    hidePlot();
     btnRun.style.display = 'none';
     btnStop.style.display = 'inline-flex';
 
@@ -393,10 +391,7 @@ function bindMissionEvents(missionId: string): void {
       }
       output.innerHTML = html;
 
-      if (result.plot) {
-        plotArea.style.display = 'block';
-        plotImg.src = `data:image/png;base64,${result.plot}`;
-      }
+      if (result.plot) showPlot(result.plot);
 
       editorContent = code;
       saveCurrentCode(missionId);

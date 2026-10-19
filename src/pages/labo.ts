@@ -2,6 +2,7 @@ import { renderHeader, bindHeaderEvents } from '../components/header';
 import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
 import { loadDataset } from '../missions/index';
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
+import { renderPlotArea, showPlot, hidePlot, bindPlotExport } from '../components/plot-export';
 
 let datasets: Record<string, string> = {};
 
@@ -77,9 +78,7 @@ export async function renderLabo(): Promise<void> {
             <div id="output-area" class="card" style="flex:1;min-height:300px;max-height:50vh;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">
               <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici…</span>
             </div>
-            <div id="plot-area" style="display:none">
-              <img id="plot-img" style="max-width:100%;border-radius:var(--radius-md);border:1px solid var(--border)" />
-            </div>
+            ${renderPlotArea()}
           </div>
         </div>
       </div>
@@ -99,17 +98,16 @@ export async function renderLabo(): Promise<void> {
   }
 
   bindLaboEvents();
+  bindPlotExport(() => 'datalab-labo-graphique');
 }
 
 function bindLaboEvents(): void {
   document.getElementById('btn-run')?.addEventListener('click', async () => {
     const code = getEditorCode();
     const output = document.getElementById('output-area')!;
-    const plotArea = document.getElementById('plot-area')!;
-    const plotImg = document.getElementById('plot-img') as HTMLImageElement;
 
     output.innerHTML = '<span style="color:var(--accent)">⏳ Chargement de Python…</span>';
-    plotArea.style.display = 'none';
+    hidePlot();
 
     try {
       await initEngine();
@@ -126,10 +124,7 @@ function bindLaboEvents(): void {
       }
       output.innerHTML = html;
 
-      if (result.plot) {
-        plotArea.style.display = 'block';
-        plotImg.src = `data:image/png;base64,${result.plot}`;
-      }
+      if (result.plot) showPlot(result.plot);
     } catch (err) {
       output.innerHTML = `<span style="color:var(--error)">❌ ${escapeHtml(String(err))}</span>`;
     }
@@ -138,7 +133,7 @@ function bindLaboEvents(): void {
   document.getElementById('btn-reset')?.addEventListener('click', () => {
     resetEngine();
     document.getElementById('output-area')!.innerHTML = '<span style="color:var(--text-tertiary)">Moteur réinitialisé.</span>';
-    document.getElementById('plot-area')!.style.display = 'none';
+    hidePlot();
   });
 
   document.getElementById('btn-export-py')?.addEventListener('click', () => {

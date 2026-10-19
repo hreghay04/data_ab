@@ -20,6 +20,25 @@ matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 import io, base64
 
+# Charts are shown on a dark panel and exported as-is. Without this, matplotlib
+# draws a white plot area and black titles on the dark figure background, which
+# leaves titles and axis labels nearly unreadable.
+plt.rcParams.update({
+    'figure.facecolor': '#1e1e2e',
+    'figure.edgecolor': '#1e1e2e',
+    'savefig.facecolor': '#1e1e2e',
+    'axes.facecolor': '#1e1e2e',
+    'axes.edgecolor': '#3a3a55',
+    'axes.labelcolor': '#e8e8f0',
+    'axes.titlecolor': '#ffffff',
+    'text.color': '#e8e8f0',
+    'xtick.color': '#a0a0c0',
+    'ytick.color': '#a0a0c0',
+    'grid.color': '#2f2f4a',
+    'legend.facecolor': '#252540',
+    'legend.edgecolor': '#3a3a55',
+})
+
 # Override plt.show to silently do nothing (plots are captured separately)
 _original_show = plt.show
 def _silent_show(*args, **kwargs):
