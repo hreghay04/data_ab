@@ -73,7 +73,7 @@ export function renderHome(): void {
         <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;letter-spacing:-0.01em">🗺️ Les univers</h2>
         <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:40px" class="stagger">
           ${renderUniversCard(1, 'Je découvre mes superpouvoirs numériques', 'Données, tableaux, premiers graphiques et statistiques', ['mission-01', 'mission-02', 'mission-03'], progress)}
-          ${renderUniversCard(2, 'Je mène mes propres enquêtes', 'Corrélations, régressions et analyses approfondies', ['mission-04', 'mission-05', 'mission-06'], progress)}
+          ${renderUniversCard(2, 'Je mène mes propres enquêtes', 'Premier modèle d\'IA, prédictions et corrélations', ['mission-04', 'mission-05', 'mission-06'], progress)}
           ${renderUniversCard(3, 'Je construis ma première IA', 'Classification, prédiction et biais', ['mission-07', 'mission-08', 'mission-09'], progress)}
           ${renderUniversCard(4, 'Mon premier projet data science', 'Choix de sujet, analyse complète et présentation', ['mission-10', 'mission-11', 'mission-12'], progress)}
         </section>

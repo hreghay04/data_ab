@@ -1,0 +1,67 @@
+titre,genre,annee,nb_volumes,age_cible,action,romance,humour,violence,note,popularite_millions
+Naruto,Shonen,1999,72,16,5.5,3.2,7.8,4.5,8.1,250
+One Piece,Shonen,1997,105,15,6.7,3.2,4.1,4.6,7.5,516
+Dragon Ball,Shonen,1984,42,12,7.4,3.3,7.0,2.6,7.2,260
+Bleach,Shonen,2001,74,16,6.6,0,6.9,3.9,7.0,130
+My Hero Academia,Shonen,2014,40,15,8.0,2.8,7.8,3.6,7.4,85
+Demon Slayer,Shonen,2016,23,12,9.6,3.0,7.2,5.5,7.9,150
+Hunter x Hunter,Shonen,1998,37,12,6.3,3.0,10,5.5,7.6,84
+Fairy Tail,Shonen,2006,63,15,6.2,2.8,7.5,8.8,8.3,72
+Black Clover,Shonen,2015,36,12,8.7,3.5,6.3,5.8,8.2,19
+Jujutsu Kaisen,Shonen,2018,26,16,10,4.2,6.6,5.0,7.1,90
+Fullmetal Alchemist,Shonen,2001,27,14,5.6,0.5,5.9,6.5,8.5,80
+Captain Tsubasa,Shonen,1981,37,15,7.8,3.4,5.5,5.5,7.7,90
+Yu Yu Hakusho,Shonen,1990,19,13,7.9,1.6,4.2,4.8,9.0,50
+Saint Seiya,Shonen,1986,28,12,7.3,1.1,6.9,0.6,9.1,50
+Rurouni Kenshin,Shonen,1994,28,12,7.0,7.1,6.5,3.9,8.0,72
+Blue Lock,Shonen,2018,30,13,9.3,4.1,4.0,10,9.0,30
+Haikyu!!,Shonen,2012,45,15,7.4,2.7,3.4,3.1,8.1,60
+Slam Dunk,Shonen,1990,31,15,7.9,1.5,5.3,4.0,7.4,170
+Dr. Stone,Shonen,2017,26,15,9.2,4.2,6.5,4.6,8.0,15
+The Seven Deadly Sins,Shonen,2012,41,16,8.5,5.2,4.2,5.6,8.3,37
+Shaman King,Shonen,1998,32,15,9.0,6.5,7.8,3.7,8.1,38
+Beyblade,Shonen,1999,14,15,7.8,1.3,5.9,5.5,7.1,10
+Fruits Basket,Shojo,1998,23,16,3.9,6.1,5.9,3.1,8.0,30
+Sailor Moon,Shojo,1991,18,12,2.8,5.7,6.5,1.8,7.4,46
+Nana,Shojo,2000,21,14,3.9,7.4,7.5,2.3,7.6,50
+Ouran High School Host Club,Shojo,2002,18,12,3.4,7.5,8.2,2.9,7.5,14
+Cardcaptor Sakura,Shojo,1996,12,15,6.6,5.2,4.8,0.3,8.5,17
+Kimi ni Todoke,Shojo,2005,30,11,2.2,9.4,5.3,1.4,8.1,30
+Ao Haru Ride,Shojo,2011,13,13,5.3,8.2,3.5,2.5,7.8,10
+Lovely Complex,Shojo,2001,17,16,3.4,6.5,6.7,5.6,8.1,12
+Vampire Knight,Shojo,2004,19,16,2.0,5.3,7.6,1.5,7.3,10
+Skip Beat!,Shojo,2002,48,11,3.0,10,3.0,3.9,7.8,20
+Maid Sama!,Shojo,2005,18,11,1.7,6.9,4.2,1.2,7.9,10
+Marmalade Boy,Shojo,1992,8,16,3.4,7.8,8.0,0.5,9.0,10
+Glass Mask,Shojo,1976,49,15,1.3,7.1,6.6,1.7,8.5,50
+Hana Yori Dango,Shojo,1992,37,15,3.3,6.8,6.3,1.6,6.8,61
+Orange,Shojo,2012,7,12,1.8,6.4,7.5,1.3,7.4,6
+Say I Love You,Shojo,2008,18,12,1.9,9.5,9.4,1.3,7.0,6
+Horimiya,Shojo,2011,16,12,1.7,9.9,6.8,3.7,8.1,6
+Akatsuki no Yona,Shojo,2009,40,11,1.8,6.8,5.5,3.4,8.2,25
+Nodame Cantabile,Shojo,2001,25,14,1.9,4.3,6.0,3.1,6.0,37
+Paradise Kiss,Shojo,1999,5,16,3.6,8.6,4.7,0,7.5,5
+Peach Girl,Shojo,1997,18,11,5.5,4.3,5.6,2.4,7.4,13
+Kaichou wa Maid-sama,Shojo,2005,18,15,5.2,7.4,5.0,0.9,8.4,9
+Berserk,Seinen,1989,42,22,7.2,3.2,2.5,7.8,8.2,50
+Vinland Saga,Seinen,2005,28,30,7.2,5.7,3.6,5.4,8.5,6
+Monster,Seinen,1994,18,25,5.0,1.7,3.9,8.2,8.2,20
+20th Century Boys,Seinen,1999,22,22,9.2,3.2,0.8,8.9,8.3,28
+Vagabond,Seinen,1998,37,20,1.7,2.0,0,7.7,7.2,82
+Gantz,Seinen,2000,37,20,8.3,3.8,2.5,10,7.7,23
+Tokyo Ghoul,Seinen,2011,14,28,5.0,3.5,3.1,7.6,6.9,47
+Parasyte,Seinen,1988,10,20,4.6,4.4,0,5.3,8.4,25
+Akira,Seinen,1982,6,18,9.3,5.3,4.1,4.0,8.5,50
+Ghost in the Shell,Seinen,1989,3,22,10,8.3,2.3,4.8,7.9,2
+Hellsing,Seinen,1997,10,18,6.0,6.1,4.9,7.9,7.4,6
+Blame!,Seinen,1997,10,18,7.1,3.4,0.9,10,8.4,3
+Kingdom,Seinen,2006,70,20,5.7,3.3,0.4,7.2,5.3,100
+Golden Kamuy,Seinen,2014,31,25,7.7,5.0,1.7,6.9,7.5,25
+Oyasumi Punpun,Seinen,2007,13,28,3.6,1.7,3.0,5.9,7.9,3
+Homunculus,Seinen,2003,15,22,9.2,1.6,1.3,8.9,7.5,3
+Ajin,Seinen,2012,17,22,4.0,0,4.5,6.0,9.3,8
+Terra Formars,Seinen,2011,22,28,2.2,0.6,2.6,8.3,9.0,16
+Btooom!,Seinen,2009,26,25,8.0,3.2,2.4,7.6,6.2,3
+Claymore,Seinen,2001,27,25,4.6,3.7,3.4,9.7,9.6,5
+Elfen Lied,Seinen,2002,12,25,2.1,5.6,4.1,7.1,7.6,2
+Freesia,Seinen,2001,12,18,6.3,6.7,0.6,9.5,7.8,1

@@ -40,10 +40,19 @@ def _datalab_show_plot():
   postMessage({ type: 'ready' });
 }
 
+let sklearnLoaded = false;
+
 async function runCode(code, datasets) {
   if (!pyodide) {
     postMessage({ type: 'error', error: 'Pyodide non initialisé' });
     return;
+  }
+
+  // scikit-learn is ~8MB — load it only when the code actually needs it
+  if (!sklearnLoaded && /\bsklearn\b|\bscikit-learn\b/.test(code)) {
+    postMessage({ type: 'loading-package', name: 'scikit-learn' });
+    await pyodide.loadPackage('scikit-learn');
+    sklearnLoaded = true;
   }
 
   // Load datasets into pyodide filesystem
@@ -117,6 +126,7 @@ self.onmessage = async (e) => {
   } else if (type === 'reset') {
     // Reload pyodide
     pyodide = null;
+    sklearnLoaded = false;
     await initPyodide();
   }
 };

@@ -89,6 +89,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     ],
     duration: '~45 min',
   },
+  'mission-04': {
+    id: 'mission-04',
+    number: '04',
+    universe: 2,
+    title: 'Mon premier modèle d\'IA',
+    description: 'Shonen, Shojo ou Seinen ? Construis une IA qui devine le genre d\'un manga — en 15 lignes, sans bibliothèque magique.',
+    badge: 'Apprentie IA',
+    xp: 80,
+    dataset: 'mangas.csv',
+    datasetSource: 'Vrais titres de mangas ; notes d\'action, romance et violence synthétiques (inventées pour l\'exercice)',
+    objectives: [
+      'Comprendre ce que signifie « apprendre à partir d\'exemples »',
+      'Coder l\'algorithme des k plus proches voisins depuis zéro',
+      'Séparer données d\'entraînement et données de test',
+      'Évaluer un modèle en le comparant à une baseline',
+    ],
+    duration: '~60 min',
+  },
 };
 
 export async function loadMission(id: string): Promise<MissionData | null> {

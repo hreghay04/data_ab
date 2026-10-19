@@ -1,3 +1,5 @@
+import { MISSIONS_META } from '../missions/index';
+
 export interface MissionProgress {
   id: string;
   status: 'locked' | 'available' | 'in-progress' | 'completed';
@@ -26,21 +28,55 @@ export interface UserProgress {
 
 const STORAGE_KEY = 'datalab_progress';
 
+function missionIds(): string[] {
+  return Object.keys(MISSIONS_META).sort();
+}
+
 function defaultProgress(): UserProgress {
+  const missions: Record<string, MissionProgress> = {};
+  missionIds().forEach((id, i) => {
+    missions[id] = {
+      id,
+      status: i === 0 ? 'available' : 'locked',
+      mode: 'decouverte',
+      code: '',
+      attempts: 0,
+    };
+  });
   return {
     version: 2,
     xp: 0,
     level: 1,
     badges: [],
-    missions: {
-      'mission-01': { id: 'mission-01', status: 'available', mode: 'decouverte', code: '', attempts: 0 },
-      'mission-02': { id: 'mission-02', status: 'locked', mode: 'decouverte', code: '', attempts: 0 },
-      'mission-03': { id: 'mission-03', status: 'locked', mode: 'decouverte', code: '', attempts: 0 },
-    },
+    missions,
     settings: { theme: 'system', fontSize: 14 },
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
+}
+
+// Saves made before a mission existed have no entry for it. Add the missing
+// ones, and open any whose predecessor is already finished.
+function syncMissions(progress: UserProgress): UserProgress {
+  const ids = missionIds();
+  ids.forEach((id, i) => {
+    if (!progress.missions[id]) {
+      progress.missions[id] = {
+        id,
+        status: i === 0 ? 'available' : 'locked',
+        mode: 'decouverte',
+        code: '',
+        attempts: 0,
+      };
+    }
+  });
+  ids.forEach((id, i) => {
+    if (i > 0 && progress.missions[id].status === 'locked'
+        && progress.missions[ids[i - 1]]?.status === 'completed') {
+      progress.missions[id].status = 'available';
+    }
+  });
+  return progress;
 }
 
 export function loadProgress(): UserProgress {
@@ -48,8 +84,8 @@ export function loadProgress(): UserProgress {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultProgress();
     const data = JSON.parse(raw);
-    if (!data || data.version !== 2) return defaultProgress();
-    return data as UserProgress;
+    if (!data || data.version !== 2 || !data.missions) return defaultProgress();
+    return syncMissions(data as UserProgress);
   } catch {
     return defaultProgress();
   }
@@ -71,8 +107,9 @@ export function importProgress(json: string): UserProgress | null {
   try {
     const data = JSON.parse(json);
     if (!data || data.version !== 2 || !data.missions) return null;
-    saveProgress(data);
-    return data;
+    const synced = syncMissions(data as UserProgress);
+    saveProgress(synced);
+    return synced;
   } catch {
     return null;
   }

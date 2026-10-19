@@ -14,10 +14,28 @@ let status: EngineStatus = 'idle';
 let statusListeners: StatusCallback[] = [];
 let pendingResolve: ((result: ExecutionResult) => void) | null = null;
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
+let packageListeners: ((name: string) => void)[] = [];
 
 function setStatus(s: EngineStatus) {
   status = s;
   statusListeners.forEach(fn => fn(s));
+}
+
+export function onPackageLoad(fn: (name: string) => void): () => void {
+  packageListeners.push(fn);
+  return () => { packageListeners = packageListeners.filter(f => f !== fn); };
+}
+
+function onTimeout() {
+  setStatus('error');
+  pendingResolve?.({
+    stdout: '',
+    stderr: '',
+    plot: null,
+    error: '⏱️ Exécution trop longue. Vérifie qu\'il n\'y a pas de boucle infinie.',
+  });
+  pendingResolve = null;
+  resetEngine();
 }
 
 export function onStatusChange(fn: StatusCallback): () => void {
@@ -50,6 +68,11 @@ export function initEngine(): Promise<void> {
       if (msg.type === 'ready') {
         setStatus('ready');
         resolve();
+      } else if (msg.type === 'loading-package') {
+        // Downloading an extra package (e.g. scikit-learn, ~8MB) — give it room
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => onTimeout(), 120000);
+        packageListeners.forEach(fn => fn(msg.name));
       } else if (msg.type === 'result') {
         if (timeoutId) clearTimeout(timeoutId);
         setStatus('ready');
@@ -62,14 +85,18 @@ export function initEngine(): Promise<void> {
         pendingResolve = null;
       } else if (msg.type === 'error') {
         if (timeoutId) clearTimeout(timeoutId);
-        setStatus('ready');
-        pendingResolve?.({
-          stdout: '',
-          stderr: '',
-          plot: null,
-          error: msg.error,
-        });
-        pendingResolve = null;
+        if (pendingResolve) {
+          setStatus('ready');
+          pendingResolve({ stdout: '', stderr: '', plot: null, error: msg.error });
+          pendingResolve = null;
+        } else {
+          // Failure during init: no run is awaiting a result, so surface it here
+          // instead of leaving initEngine() pending forever.
+          setStatus('error');
+          worker?.terminate();
+          worker = null;
+          reject(new Error(msg.error || 'Erreur du moteur Python'));
+        }
       }
     };
 
@@ -92,18 +119,7 @@ export function runPython(code: string, datasets?: Record<string, string>): Prom
     setStatus('running');
     pendingResolve = resolve;
 
-    // 30s timeout
-    timeoutId = setTimeout(() => {
-      setStatus('error');
-      pendingResolve?.({
-        stdout: '',
-        stderr: '',
-        plot: null,
-        error: '⏱️ Exécution trop longue (> 30s). Vérifie qu\'il n\'y a pas de boucle infinie.',
-      });
-      pendingResolve = null;
-      resetEngine();
-    }, 30000);
+    timeoutId = setTimeout(() => onTimeout(), 30000);
 
     worker.postMessage({ type: 'run', code, datasets });
   });
