@@ -10,6 +10,7 @@ export interface MissionProgress {
   bestMode?: string;
   hypothesisText?: string;
   reflectionText?: string;
+  validatedSteps?: number[];
 }
 
 export interface UserProgress {

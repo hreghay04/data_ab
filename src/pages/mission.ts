@@ -122,6 +122,11 @@ function renderCurrentStep(missionId: string): void {
         () => { document.getElementById('btn-run')?.click(); }
       );
     }
+    if ((mp.validatedSteps || []).includes(currentStepIndex)) {
+      renderValidationFeedback({ ok: true, message: 'Tu as déjà réussi cette étape. Tu peux la relancer ou passer à la suite.' });
+      const explanation = document.getElementById('explanation');
+      if (explanation) explanation.style.display = 'block';
+    }
   }
 }
 
@@ -158,6 +163,7 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
             <button class="btn btn-secondary" id="btn-stop" style="display:none">⏹️ Stop</button>
           </div>
           <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
+          <div id="validation-feedback" style="display:none;padding:12px 14px;border-radius:var(--radius-md);border:1px solid transparent"></div>
           <div id="output-area" class="card" style="min-height:120px;max-height:350px;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">
             <span style="color:var(--text-tertiary)">Les résultats apparaîtront ici…</span>
           </div>
@@ -192,19 +198,123 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
           >${escapeHtml(loadProgress().missions[missionId]?.hypothesisText || '')}</textarea>
         ` : ''}
 
-        ${step.type === 'complete' ? `
-          <div style="text-align:center;margin-top:28px">
-            <button class="btn btn-primary hero-cta" id="btn-complete">
-              🎉 Terminer la mission
-            </button>
-          </div>
-        ` : ''}
+        ${step.type === 'complete' ? renderCompletionPanel(missionId) : ''}
       </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:20px;padding-bottom:40px">
         <button class="btn btn-ghost" id="btn-prev" ${currentStepIndex === 0 ? 'disabled style="opacity:0.3"' : ''}>← Précédent</button>
         ${step.type !== 'complete' ? `<button class="btn btn-primary" id="btn-next">Suivant →</button>` : ''}
       </div>
+    </div>
+  `;
+}
+
+interface ValidationOutcome {
+  ok: boolean;
+  message: string;
+}
+
+// Experte steps are open-ended canvases, so demanding an exact output string
+// there would be wrong — producing a working result is the bar instead.
+function checkValidation(
+  step: MissionStep,
+  result: { stdout: string; error: string | null; plot: string | null },
+  mode: string,
+): ValidationOutcome | null {
+  if (!step.validation) return null;
+  if (result.error) {
+    return { ok: false, message: 'Ton code s\'est arrêté sur une erreur. Lis le message ci-dessus — il dit souvent exactement quelle ligne pose problème.' };
+  }
+
+  const produced = result.stdout.trim().length > 0 || !!result.plot;
+
+  if (mode === 'experte' || step.validation.type === 'no-error') {
+    return produced
+      ? { ok: true, message: 'Ton code tourne sans erreur et produit un résultat.' }
+      : { ok: false, message: 'Ton code tourne, mais il n\'affiche rien. Ajoute un print() ou un graphique pour voir ce qu\'il fait.' };
+  }
+
+  const expected = step.validation.expected || '';
+  if (step.validation.type === 'output-contains') {
+    const ok = result.stdout.toLowerCase().includes(expected.toLowerCase());
+    return ok
+      ? { ok: true, message: 'Le résultat attendu est bien là.' }
+      : { ok: false, message: `Ton code tourne, mais sa sortie ne contient pas encore « ${expected} ». Regarde les indices si tu bloques.` };
+  }
+  if (step.validation.type === 'output-matches') {
+    let ok = false;
+    try { ok = new RegExp(expected).test(result.stdout); } catch { ok = false; }
+    return ok
+      ? { ok: true, message: 'Le résultat attendu est bien là.' }
+      : { ok: false, message: 'Ton code tourne, mais le résultat n\'a pas encore la forme attendue.' };
+  }
+  return null;
+}
+
+function codeStepIndexes(): number[] {
+  if (!currentMission) return [];
+  return currentMission.steps
+    .map((s, i) => (s.type === 'code' || s.type === 'challenge' ? i : -1))
+    .filter(i => i >= 0);
+}
+
+function renderValidationFeedback(outcome: ValidationOutcome | null): void {
+  const el = document.getElementById('validation-feedback');
+  if (!el) return;
+  if (!outcome) { el.style.display = 'none'; return; }
+  const color = outcome.ok ? 'var(--success)' : 'var(--warning)';
+  const bg = outcome.ok ? 'var(--success-light)' : 'var(--warning-light)';
+  el.style.display = 'block';
+  el.style.background = bg;
+  el.style.borderColor = color;
+  el.innerHTML = `<span style="color:${color};font-weight:700">${outcome.ok ? '✅ Étape réussie' : '🔸 Pas encore'}</span>
+    <div style="margin-top:4px;font-size:0.86rem;color:var(--text-secondary)">${escapeHtml(outcome.message)}</div>`;
+}
+
+function renderCompletionPanel(missionId: string): string {
+  const mission = currentMission!;
+  const mp = loadProgress().missions[missionId];
+  const done = new Set(mp?.validatedSteps || []);
+  const codeSteps = codeStepIndexes();
+  const remaining = codeSteps.filter(i => !done.has(i));
+  const badge = mission.meta.badge;
+
+  const checklist = codeSteps.map(i => {
+    const ok = done.has(i);
+    return `<li style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:0.9rem;${ok ? '' : 'color:var(--text-tertiary)'}">
+      <span>${ok ? '✅' : '⬜'}</span>
+      <span style="${ok ? '' : 'cursor:pointer;text-decoration:underline dotted'}" ${ok ? '' : `data-goto="${i}"`}>${escapeHtml(mission.steps[i].title)}</span>
+    </li>`;
+  }).join('');
+
+  return `
+    <div style="margin-top:26px;padding:20px;background:var(--bg-tertiary);border-radius:var(--radius-md)">
+      <div style="font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-tertiary);margin-bottom:10px">
+        Étapes de code — ${codeSteps.length - remaining.length}/${codeSteps.length} réussies
+      </div>
+      <ul style="list-style:none">${checklist}</ul>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      ${remaining.length === 0 ? `
+        <button class="btn btn-primary hero-cta" id="btn-complete" data-full="1">
+          🎉 Terminer la mission
+        </button>
+        <div style="font-size:0.82rem;color:var(--text-tertiary);margin-top:10px">
+          +${mission.meta.xp} XP${badge ? ` et le badge 🏅 ${escapeHtml(badge)}` : ''}
+        </div>
+      ` : `
+        <button class="btn btn-primary hero-cta" id="btn-goto-remaining" data-goto="${remaining[0]}">
+          ▶️ Reprendre : ${escapeHtml(mission.steps[remaining[0]].title)}
+        </button>
+        <div style="font-size:0.86rem;color:var(--text-secondary);margin-top:14px;line-height:1.6">
+          Il te reste <strong>${remaining.length} étape${remaining.length > 1 ? 's' : ''}</strong> à faire tourner.
+          ${badge ? `Le badge 🏅 ${escapeHtml(badge)} se débloque quand tout est réussi.` : ''}
+        </div>
+        <button class="btn btn-ghost btn-sm" id="btn-complete" data-full="0" style="margin-top:10px">
+          Terminer quand même (+${Math.round(mission.meta.xp / 2)} XP, sans le badge)
+        </button>
+      `}
     </div>
   `;
 }
@@ -291,6 +401,17 @@ function bindMissionEvents(missionId: string): void {
       editorContent = code;
       saveCurrentCode(missionId);
       mp.attempts++;
+
+      const step = currentMission!.steps[currentStepIndex];
+      const outcome = checkValidation(step, result, mp.mode);
+      renderValidationFeedback(outcome);
+      if (outcome?.ok) {
+        const done = new Set(mp.validatedSteps || []);
+        done.add(currentStepIndex);
+        mp.validatedSteps = [...done].sort((a, b) => a - b);
+        const explanation = document.getElementById('explanation');
+        if (explanation) explanation.style.display = 'block';
+      }
       saveProgress(progress);
     } catch (err) {
       output.innerHTML = `<span style="color:var(--error)">❌ ${escapeHtml(String(err))}</span>`;
@@ -328,15 +449,29 @@ function bindMissionEvents(missionId: string): void {
     URL.revokeObjectURL(url);
   });
 
-  document.getElementById('btn-complete')?.addEventListener('click', () => {
+  document.getElementById('btn-complete')?.addEventListener('click', (e) => {
     const mission = currentMission!;
+    const full = (e.currentTarget as HTMLElement).dataset.full === '1';
     mp.status = 'completed';
     mp.completedAt = Date.now();
-    addXP(progress, mission.meta.xp);
-    if (mission.meta.badge) addBadge(progress, mission.meta.badge);
+    addXP(progress, full ? mission.meta.xp : Math.round(mission.meta.xp / 2));
+    if (full && mission.meta.badge) addBadge(progress, mission.meta.badge);
     unlockNextMission(progress, missionId);
     saveProgress(progress);
     location.hash = '#/parcours';
+  });
+
+  // Jump back to a code step that hasn't been completed yet
+  document.querySelectorAll<HTMLElement>('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => {
+      const target = Number(el.dataset.goto);
+      if (!Number.isNaN(target)) {
+        saveCurrentCode(missionId);
+        currentStepIndex = target;
+        editorContent = '';
+        renderCurrentStep(missionId);
+      }
+    });
   });
 
   document.getElementById('hypothesis-input')?.addEventListener('input', (e) => {
