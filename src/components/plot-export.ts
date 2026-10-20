@@ -8,7 +8,7 @@ export function renderPlotArea(): string {
       <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-secondary btn-sm" id="btn-plot-download">⬇️ Télécharger l'image</button>
         <button class="btn btn-ghost btn-sm" id="btn-plot-copy">📋 Copier</button>
-        <span id="plot-export-msg" style="font-size:0.78rem;color:var(--text-tertiary)"></span>
+        <span id="plot-export-msg" class="t-xs dim"></span>
       </div>
     </div>
   `;

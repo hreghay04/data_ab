@@ -62,8 +62,8 @@ export function renderHome(): void {
         <!-- Progression -->
         <section class="card slide-up" style="margin-bottom:40px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <h3 style="font-size:1rem;font-weight:700">📊 Ma progression</h3>
-            <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:600">${pct}%</span>
+            <h3 style="font-size:var(--text-md);font-weight:700">📊 Ma progression</h3>
+            <span style="font-size:var(--text-sm);color:var(--text-secondary);font-weight:600">${pct}%</span>
           </div>
           <div class="progress-bar" style="height:10px">
             <div class="progress-bar-fill" style="width:${pct}%"></div>
@@ -74,7 +74,7 @@ export function renderHome(): void {
         ${renderBadges(progress)}
 
         <!-- Univers -->
-        <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;letter-spacing:-0.01em">🗺️ Les univers</h2>
+        <h2 style="font-size:var(--text-xl);font-weight:800;margin-bottom:20px;letter-spacing:-0.01em">🗺️ Les univers</h2>
         <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:40px" class="stagger">
           ${activeUniverses().map(u => renderUniversCard(u.num, u.title, u.description,
               missionsOfUniverse(u.num).map(m => m.id), progress)).join('')}
@@ -114,17 +114,17 @@ function renderBadges(progress: UserProgress): string {
   };
 
   return `
-    <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:6px;letter-spacing:-0.01em">🏅 Mes badges</h2>
-    <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:18px">
+    <h2 style="font-size:var(--text-xl);font-weight:800;margin-bottom:6px;letter-spacing:-0.01em">🏅 Mes badges</h2>
+    <p style="color:var(--text-secondary);font-size:var(--text-sm);margin-bottom:18px">
       ${all.filter(b => b.done).length} sur ${all.length} débloqués
     </p>
     <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:40px" class="stagger">
       ${all.map(b => `
         <div class="card" style="text-align:center;padding:18px 12px;${b.done ? '' : 'opacity:0.4;filter:grayscale(1)'}"
              title="${b.done ? 'Obtenu en terminant : ' + escapeAttr(b.mission) : 'À débloquer : ' + escapeAttr(b.mission)}">
-          <div style="font-size:2rem;line-height:1.2">${b.done ? (icons[b.badge] || '🏅') : '🔒'}</div>
-          <div style="font-size:0.82rem;font-weight:700;margin-top:6px">${b.done ? b.badge : '???'}</div>
-          <div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:3px">
+          <div style="font-size:var(--text-xl);line-height:1.2">${b.done ? (icons[b.badge] || '🏅') : '🔒'}</div>
+          <div style="font-size:var(--text-sm);font-weight:700;margin-top:6px">${b.done ? b.badge : '???'}</div>
+          <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:3px">
             ${b.done ? 'Débloqué' : 'Mission ' + b.id.replace('mission-', '')}
           </div>
         </div>
@@ -149,19 +149,19 @@ function renderUniversCard(num: number, title: string, desc: string, missionIds:
          style="--uc:${color}"
          ${!isLocked ? `onclick="location.hash='#/parcours'"` : ''}>
       <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${color};border-radius:4px 0 0 4px"></div>
-      <div style="font-size:0.7rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px">
-        <span style="width:26px;height:26px;border-radius:50%;background:${color};color:white;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800">${num}</span>
+      <div style="font-size:var(--text-xs);font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <span style="width:26px;height:26px;border-radius:50%;background:${color};color:white;display:inline-flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:800">${num}</span>
         Univers ${num}
       </div>
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">${title}</h3>
-      <p style="font-size:0.84rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">${desc}</p>
+      <h3 style="font-size:var(--text-md);font-weight:700;margin-bottom:6px">${title}</h3>
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin-bottom:14px;line-height:1.6">${desc}</p>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="progress-bar" style="flex:1;height:6px">
           <div class="progress-bar-fill" style="width:${missions.length > 0 ? (completedInUnivers / missions.length) * 100 : 0}%;background:${color}"></div>
         </div>
-        <span style="font-size:0.72rem;color:var(--text-tertiary);font-weight:600">${completedInUnivers}/${missions.length}</span>
+        <span class="t-xs dim bold">${completedInUnivers}/${missions.length}</span>
       </div>
-      ${isLocked ? '<div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:10px">🔒 Termine l\'univers précédent</div>' : ''}
+      ${isLocked ? '<div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-top:10px">🔒 Termine l\'univers précédent</div>' : ''}
     </div>
   `;
 }

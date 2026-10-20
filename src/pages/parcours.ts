@@ -14,10 +14,10 @@ export function renderParcours(): void {
     <main class="page">
       <div class="page-content">
         <div class="fade-in" style="margin-bottom:32px">
-          <h1 style="font-size:2rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px">
+          <h1 style="font-size:var(--text-xl);font-weight:800;letter-spacing:-0.02em;margin-bottom:6px">
             🗺️ Mon parcours
           </h1>
-          <p style="color:var(--text-secondary);font-size:0.95rem">
+          <p class="t-sm muted">
             ${total} missions pour devenir une exploratrice des données
           </p>
         </div>
@@ -28,8 +28,8 @@ export function renderParcours(): void {
           return `
             <section class="slide-up" style="margin-bottom:44px">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-                <span style="width:36px;height:36px;border-radius:12px;background:${color};color:white;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800">${u.num}</span>
-                <h2 style="font-size:1.1rem;font-weight:700">${u.emoji} ${u.title}</h2>
+                <span style="width:36px;height:36px;border-radius:12px;background:${color};color:white;display:inline-flex;align-items:center;justify-content:center;font-size:var(--text-md);font-weight:800">${u.num}</span>
+                <h2 style="font-size:var(--text-lg);font-weight:700">${u.emoji} ${u.title}</h2>
               </div>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px" class="stagger">
                 ${missions.map(meta => {
@@ -50,7 +50,7 @@ export function renderParcours(): void {
                       <div class="mission-card-desc">${meta.description}</div>
                       <div class="mission-card-footer">
                         <span class="mission-status ${statusClass}">${statusLabel}</span>
-                        ${meta.badge ? `<span style="font-size:0.78rem;color:var(--badge-color);font-weight:600">🏅 ${meta.badge}</span>` : ''}
+                        ${meta.badge ? `<span style="font-size:var(--text-xs);color:var(--badge-color);font-weight:600">🏅 ${meta.badge}</span>` : ''}
                       </div>
                     </div>
                   `;

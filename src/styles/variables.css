@@ -1,38 +1,43 @@
 :root {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
+  /* Type scale — six sizes, deliberately. Anything between these was noise. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.75rem;
+
   /* Colors - Light */
-  --bg-primary: #f5f5f7;
+  --bg-primary: #f6f4f1;
   --bg-secondary: rgba(255, 255, 255, 0.72);
-  --bg-tertiary: #f0f1f5;
-  --bg-code: #1a1b26;
+  --bg-tertiary: #efebe6;
+  --bg-code: #14131c;
   --bg-glass: rgba(255, 255, 255, 0.6);
-  --text-primary: #1a1a2e;
-  --text-secondary: #555570;
-  --text-tertiary: #8888a8;
+  --text-primary: #17161f;
+  --text-secondary: #55505f;
+  --text-tertiary: #8a8494;
   --text-on-dark: #c8d6e5;
   --border: rgba(0, 0, 0, 0.06);
-  --border-focus: #6366f1;
+  --border-focus: #d6336c;
   --border-glass: rgba(255, 255, 255, 0.3);
 
   /* Accent */
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-light: rgba(99, 102, 241, 0.08);
-  --accent-glow: rgba(99, 102, 241, 0.25);
-  --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
-  --accent-gradient-hover: linear-gradient(135deg, #4f46e5, #7c3aed, #9333ea);
+  --accent: #d6336c;
+  --accent-hover: #b02a5b;
+  --accent-light: rgba(214, 51, 108, 0.08);
+  --accent-glow: rgba(214, 51, 108, 0.22);
+  --accent-gradient: linear-gradient(135deg, #f59e0b, #f43f5e, #d6336c);
+  --accent-gradient-hover: linear-gradient(135deg, #d97706, #e11d48, #b02a5b);
 
   /* Universe colors */
-  --universe-1: #6366f1;
-  --universe-1-bg: rgba(99, 102, 241, 0.08);
-  --universe-2: #06b6d4;
-  --universe-2-bg: rgba(6, 182, 212, 0.08);
-  --universe-3: #f59e0b;
-  --universe-3-bg: rgba(245, 158, 11, 0.08);
-  --universe-4: #10b981;
-  --universe-4-bg: rgba(16, 185, 129, 0.08);
+  --universe-1: #f59e0b;
+  --universe-2: #d6336c;
+  --universe-3: #7c3aed;
+  --universe-4: #0ea5e9;
 
   /* Status */
   --success: #10b981;
@@ -44,7 +49,7 @@
 
   /* XP */
   --xp-color: #f59e0b;
-  --badge-color: #8b5cf6;
+  --badge-color: #7c3aed;
 
   /* Sizing */
   --radius-sm: 8px;
@@ -54,7 +59,7 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.15);
+  --shadow-glow: 0 0 30px rgba(214, 51, 108, 0.14);
 
   --header-height: 64px;
   --sidebar-width: 280px;
@@ -62,25 +67,25 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0c0c14;
-  --bg-secondary: rgba(22, 22, 40, 0.8);
-  --bg-tertiary: #1a1a30;
-  --bg-code: #0f0f1a;
-  --bg-glass: rgba(22, 22, 40, 0.6);
+  --bg-primary: #0b0a11;
+  --bg-secondary: rgba(24, 22, 33, 0.82);
+  --bg-tertiary: #1b1925;
+  --bg-code: #110f18;
+  --bg-glass: rgba(24, 22, 33, 0.62);
   --text-primary: #eaeaf0;
-  --text-secondary: #a0a0c0;
-  --text-tertiary: #6868a0;
+  --text-secondary: #a8a2b4;
+  --text-tertiary: #78707f;
   --text-on-dark: #c8d0e0;
   --border: rgba(255, 255, 255, 0.06);
-  --border-focus: #818cf8;
+  --border-focus: #ff6b9d;
   --border-glass: rgba(255, 255, 255, 0.08);
 
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-light: rgba(129, 140, 248, 0.1);
-  --accent-glow: rgba(129, 140, 248, 0.25);
-  --accent-gradient: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc);
-  --accent-gradient-hover: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+  --accent: #ff6b9d;
+  --accent-hover: #f43f5e;
+  --accent-light: rgba(255, 107, 157, 0.12);
+  --accent-glow: rgba(255, 107, 157, 0.28);
+  --accent-gradient: linear-gradient(135deg, #fbbf24, #fb7185, #ff6b9d);
+  --accent-gradient-hover: linear-gradient(135deg, #f59e0b, #f43f5e, #e11d48);
 
   --success-light: rgba(16, 185, 129, 0.12);
   --warning-light: rgba(245, 158, 11, 0.12);
@@ -89,5 +94,5 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 40px rgba(129, 140, 248, 0.2);
+  --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.18);
 }

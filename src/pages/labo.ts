@@ -47,8 +47,8 @@ export async function renderLabo(): Promise<void> {
       <div style="max-width:1400px;margin:0 auto;padding:16px 24px" class="fade-in">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div>
-            <h1 style="font-size:1.4rem;font-weight:800;letter-spacing:-0.01em">🧪 Laboratoire Python</h1>
-            <p style="font-size:0.85rem;color:var(--text-secondary)">Expérimente librement avec Python, pandas et matplotlib</p>
+            <h1 style="font-size:var(--text-xl);font-weight:800;letter-spacing:-0.01em">🧪 Laboratoire Python</h1>
+            <p class="t-sm muted">Expérimente librement avec Python, pandas et matplotlib</p>
           </div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ghost btn-sm" id="btn-example">📋 Exemples</button>
@@ -59,12 +59,12 @@ export async function renderLabo(): Promise<void> {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:70vh" class="lab-layout">
           <!-- Left: editor -->
           <div style="display:flex;flex-direction:column;gap:12px">
-            <div style="font-size:0.78rem;color:var(--text-tertiary);margin-bottom:4px;display:flex;gap:8px;flex-wrap:wrap">
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary);margin-bottom:4px;display:flex;gap:8px;flex-wrap:wrap">
               📂 Datasets :
-              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">kpop.csv</code>
-              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">tennis.csv</code>
-              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">chats.csv</code>
-              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">mangas.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">kpop.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">tennis.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">chats.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">mangas.csv</code>
             </div>
             <div id="cm-labo-container" style="flex:1;min-height:400px;display:flex;flex-direction:column"></div>
             <div style="display:flex;gap:8px" class="run-bar">
@@ -72,7 +72,7 @@ export async function renderLabo(): Promise<void> {
               <button class="btn btn-secondary" id="btn-reset">🔄 Réinitialiser</button>
             </div>
             ${renderEngineBoot()}
-            <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
+            <div id="engine-status" class="t-xs dim" style="text-align:center"></div>
           </div>
 
           <!-- Right: output -->

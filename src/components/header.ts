@@ -19,7 +19,7 @@ export function renderHeader(activePage: string): string {
       <div class="header-actions">
         <div class="xp-badge">⚡ ${progress.xp} XP</div>
         <div class="level-badge">Niv. ${progress.level}</div>
-        <span style="font-size:0.78rem;color:var(--text-tertiary);font-weight:600">${completed}/${total}</span>
+        <span class="t-xs dim bold">${completed}/${total}</span>
         <button class="theme-toggle" id="theme-toggle">${getThemeIcon()}</button>
       </div>
     </header>
