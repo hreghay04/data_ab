@@ -1,8 +1,9 @@
 import { renderHeader, bindHeaderEvents } from '../components/header';
-import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
+import { initEngine, runPython, onStatusChange, resetEngine, preloadEngine } from '../engine/python-engine';
 import { loadDataset } from '../missions/index';
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
 import { renderPlotArea, showPlot, hidePlot, bindPlotExport } from '../components/plot-export';
+import { renderEngineBoot, bindEngineBoot } from '../components/engine-boot';
 
 let datasets: Record<string, string> = {};
 
@@ -66,10 +67,11 @@ export async function renderLabo(): Promise<void> {
               <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:0.8rem">mangas.csv</code>
             </div>
             <div id="cm-labo-container" style="flex:1;min-height:400px;display:flex;flex-direction:column"></div>
-            <div style="display:flex;gap:8px">
+            <div style="display:flex;gap:8px" class="run-bar">
               <button class="btn btn-primary" id="btn-run" style="flex:1">▶️ Exécuter (Ctrl+Entrée)</button>
               <button class="btn btn-secondary" id="btn-reset">🔄 Réinitialiser</button>
             </div>
+            ${renderEngineBoot()}
             <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
           </div>
 
@@ -99,6 +101,8 @@ export async function renderLabo(): Promise<void> {
 
   bindLaboEvents();
   bindPlotExport(() => 'datalab-labo-graphique');
+  bindEngineBoot();
+  preloadEngine();
 }
 
 function bindLaboEvents(): void {

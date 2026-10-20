@@ -15,10 +15,18 @@ let statusListeners: StatusCallback[] = [];
 let pendingResolve: ((result: ExecutionResult) => void) | null = null;
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 let packageListeners: ((name: string) => void)[] = [];
+let progressListeners: ((pct: number, label: string) => void)[] = [];
+let lastProgress: { pct: number; label: string } | null = null;
 
 function setStatus(s: EngineStatus) {
   status = s;
   statusListeners.forEach(fn => fn(s));
+}
+
+export function onProgress(fn: (pct: number, label: string) => void): () => void {
+  progressListeners.push(fn);
+  if (lastProgress) fn(lastProgress.pct, lastProgress.label);
+  return () => { progressListeners = progressListeners.filter(f => f !== fn); };
 }
 
 export function onPackageLoad(fn: (name: string) => void): () => void {
@@ -66,8 +74,13 @@ export function initEngine(): Promise<void> {
     worker.onmessage = (e) => {
       const msg = e.data;
       if (msg.type === 'ready') {
+        lastProgress = { pct: 100, label: 'Python prêt' };
+        progressListeners.forEach(fn => fn(100, 'Python prêt'));
         setStatus('ready');
         resolve();
+      } else if (msg.type === 'progress') {
+        lastProgress = { pct: msg.pct, label: msg.label };
+        progressListeners.forEach(fn => fn(msg.pct, msg.label));
       } else if (msg.type === 'loading-package') {
         // Downloading an extra package (e.g. scikit-learn, ~8MB) — give it room
         if (timeoutId) clearTimeout(timeoutId);

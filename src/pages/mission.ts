@@ -2,8 +2,9 @@ import { renderHeader, bindHeaderEvents } from '../components/header';
 import { loadProgress, saveProgress, addXP, addBadge, unlockNextMission } from '../utils/storage';
 import { loadMission, loadDataset } from '../missions/index';
 import type { MissionData, MissionStep } from '../missions/index';
-import { initEngine, runPython, onStatusChange, resetEngine } from '../engine/python-engine';
+import { initEngine, runPython, onStatusChange, resetEngine, preloadEngine } from '../engine/python-engine';
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
+import { renderEngineBoot, bindEngineBoot } from '../components/engine-boot';
 import { renderPlotArea, showPlot, hidePlot, bindPlotExport, slugify } from '../components/plot-export';
 
 let currentMission: MissionData | null = null;
@@ -64,6 +65,9 @@ export async function renderMission(id: string): Promise<void> {
   currentStepIndex = 0;
   editorContent = mp.code || '';
 
+  // Start the ~30s download while she reads the intro, not on her first click.
+  preloadEngine();
+
   renderCurrentStep(id);
 }
 
@@ -111,6 +115,7 @@ function renderCurrentStep(missionId: string): void {
   bindHeaderEvents();
   bindMissionEvents(missionId);
   bindPlotExport(() => `datalab-${slugify(mission.meta.title)}-${slugify(step.title)}`);
+  bindEngineBoot();
 
   if (step.type === 'code' || step.type === 'challenge') {
     const container = document.getElementById('cm-editor-container');
@@ -160,10 +165,11 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
             </div>
             <div id="cm-editor-container" style="flex:1;display:flex;flex-direction:column"></div>
           </div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px" class="run-bar">
             <button class="btn btn-primary" id="btn-run" style="flex:1">▶️ Exécuter (Ctrl+Entrée)</button>
             <button class="btn btn-secondary" id="btn-stop" style="display:none">⏹️ Stop</button>
           </div>
+          ${renderEngineBoot()}
           <div id="engine-status" style="font-size:0.78rem;color:var(--text-tertiary);text-align:center"></div>
           <div id="validation-feedback" style="display:none;padding:12px 14px;border-radius:var(--radius-md);border:1px solid transparent"></div>
           <div id="output-area" class="card" style="min-height:120px;max-height:350px;overflow-y:auto;background:var(--bg-code);color:var(--text-on-dark);font-family:var(--font-mono);font-size:13px;white-space:pre-wrap;padding:16px;border:1px solid rgba(255,255,255,0.04)">

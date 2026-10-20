@@ -573,6 +573,29 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
+/* Engine boot progress */
+.engine-boot {
+  display: none;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+}
+.engine-boot.visible { display: block; }
+.engine-boot-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.engine-boot-note {
+  font-size: 0.74rem;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+}
+
 /* ==========================================
    ANIMATION UTILITIES
    ========================================== */
@@ -644,6 +667,16 @@ img { max-width: 100%; display: block; }
     border-radius: var(--radius-md);
   }
   .lab-layout { grid-template-columns: 1fr !important; }
+  /* On a phone the editor is tall, so the run button would sit far below the
+     fold. Keep it reachable without scrolling back down. */
+  .run-bar {
+    position: sticky;
+    bottom: 60px;
+    z-index: 50;
+    background: var(--bg-primary);
+    padding: 8px 0;
+    box-shadow: 0 -8px 16px -8px rgba(0,0,0,0.25);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

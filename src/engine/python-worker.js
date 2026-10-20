@@ -1,11 +1,25 @@
 let pyodide = null;
 
+function etape(pct, label) {
+  postMessage({ type: 'progress', pct, label });
+}
+
 async function initPyodide() {
+  etape(5, 'Téléchargement de Python…');
   importScripts('https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js');
+
+  etape(15, 'Démarrage de Python…');
   pyodide = await loadPyodide({
     indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
   });
-  await pyodide.loadPackage(['pandas', 'numpy', 'matplotlib']);
+
+  etape(55, 'Chargement de pandas et numpy…');
+  await pyodide.loadPackage(['numpy', 'pandas']);
+
+  etape(80, 'Chargement de matplotlib…');
+  await pyodide.loadPackage(['matplotlib']);
+
+  etape(95, 'Derniers réglages…');
 
   // Suppress warnings and setup matplotlib
   await pyodide.runPythonAsync(`
