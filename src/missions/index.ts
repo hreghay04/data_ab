@@ -40,7 +40,7 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     number: '01',
     universe: 1,
     title: 'Les secrets de la K-pop en données',
-    description: 'BTS, BLACKPINK, NewJeans… Explore un dataset de 50 titres K-pop pour découvrir ce qui fait un hit.',
+    description: 'BTS, BLACKPINK, NewJeans… Explore un dataset d\'une cinquantaine de titres K-pop pour découvrir ce qui fait un hit.',
     badge: 'Data Detective',
     xp: 50,
     dataset: 'kpop.csv',
@@ -160,6 +160,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
       'Démasquer une variable proxy et chiffrer le coût d\'une correction',
     ],
     duration: '~60 min',
+  },
+  'mission-08': {
+    id: 'mission-08',
+    number: '08',
+    universe: 3,
+    title: 'La machine qui range sans savoir ce qu\'elle range',
+    description: 'Donne une cinquantaine de titres K-pop sans aucune étiquette à un algorithme. Il va trouver les familles tout seul — et regrouper NewJeans sans voir le nom du groupe.',
+    badge: 'Exploratrice de structures',
+    xp: 80,
+    dataset: 'kpop.csv',
+    datasetSource: 'kpop.csv et mangas.csv — le second sert de banc de test pour valider la méthode sur des catégories connues.',
+    objectives: [
+      'Implémenter l\'algorithme des k-moyennes de bout en bout',
+      'Comprendre pourquoi les relances multiples sont indispensables',
+      'Valider une méthode non supervisée sur des données étiquetées',
+      'Expliquer pourquoi le choix du nombre de groupes est un choix humain',
+    ],
+    duration: '~55 min',
   },
 };
 
