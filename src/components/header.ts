@@ -15,6 +15,7 @@ export function renderHeader(activePage: string): string {
         <a href="#/" class="nav-link ${activePage === 'home' ? 'active' : ''}">🏠 Accueil</a>
         <a href="#/parcours" class="nav-link ${activePage === 'parcours' ? 'active' : ''}">🗺️ Parcours</a>
         <a href="#/labo" class="nav-link ${activePage === 'labo' ? 'active' : ''}">🧪 Labo</a>
+        <a href="#/horizons" class="nav-link ${activePage === 'horizons' ? 'active' : ''}">🧭 Horizons</a>
       </nav>
       <div class="header-actions">
         <div class="xp-badge">⚡ ${progress.xp} XP</div>
@@ -27,6 +28,7 @@ export function renderHeader(activePage: string): string {
       <a href="#/" class="nav-link ${activePage === 'home' ? 'active' : ''}">🏠<br>Accueil</a>
       <a href="#/parcours" class="nav-link ${activePage === 'parcours' ? 'active' : ''}">🗺️<br>Parcours</a>
       <a href="#/labo" class="nav-link ${activePage === 'labo' ? 'active' : ''}">🧪<br>Labo</a>
+      <a href="#/horizons" class="nav-link ${activePage === 'horizons' ? 'active' : ''}">🧭<br>Horizons</a>
     </nav>
   `;
 }

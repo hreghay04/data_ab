@@ -6,6 +6,7 @@ import { initEngine, runPython, onStatusChange, resetEngine, preloadEngine } fro
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
 import { renderEngineBoot, bindEngineBoot } from '../components/engine-boot';
 import { injectFigures } from '../components/diagrams';
+import { renderRealWorld } from '../missions/realworld';
 import { renderPlotArea, showPlot, hidePlot, bindPlotExport, slugify } from '../components/plot-export';
 
 let currentMission: MissionData | null = null;
@@ -206,6 +207,7 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
         ` : ''}
 
         ${step.type === 'reflect' ? renderHypothesisRecall(missionId) : ''}
+        ${step.type === 'reflect' ? renderRealWorld(missionId) : ''}
         ${step.type === 'complete' ? renderCompletionPanel(missionId) : ''}
       </div>
 
