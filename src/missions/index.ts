@@ -143,6 +143,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     ],
     duration: '~55 min',
   },
+  'mission-07': {
+    id: 'mission-07',
+    number: '07',
+    universe: 3,
+    title: 'L\'algorithme qui trie les dossiers',
+    description: 'Une IA sélectionne des candidats sans regarder leur lycée. Prouve qu\'elle discrimine quand même — et trouve par où passe le biais.',
+    badge: 'Auditrice d\'algorithmes',
+    xp: 90,
+    dataset: 'candidats.csv',
+    datasetSource: 'Simulation pédagogique de 300 candidatures, construite pour démontrer un mécanisme de biais algorithmique. Ne décrit aucune formation réelle.',
+    objectives: [
+      'Démontrer qu\'un écart n\'est pas explicable par le mérite',
+      'Comprendre comment un modèle hérite des biais de ses données',
+      'Mesurer l\'équité d\'un modèle, et pas seulement sa précision',
+      'Démasquer une variable proxy et chiffrer le coût d\'une correction',
+    ],
+    duration: '~60 min',
+  },
 };
 
 export async function loadMission(id: string): Promise<MissionData | null> {
