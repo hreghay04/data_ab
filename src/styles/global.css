@@ -24,6 +24,9 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Decorative bleed must never make the page scroll sideways. `clip` rather
+     than `hidden` so the sticky header and run bar keep working. */
+  overflow-x: clip;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -482,7 +485,7 @@ img { max-width: 100%; display: block; }
 /* Floating orbs behind hero */
 .hero-bg {
   position: absolute;
-  inset: -40px -50vw;
+  inset: -40px -10%;
   overflow: hidden;
   pointer-events: none;
   z-index: -1;
@@ -566,7 +569,10 @@ img { max-width: 100%; display: block; }
 /* ==========================================
    CODE EDITOR — wrapper for CodeMirror
    ========================================== */
+.lab-layout > * { min-width: 0; }
+
 .cm-editor {
+  max-width: 100%;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -703,6 +709,9 @@ img { max-width: 100%; display: block; }
     border-radius: var(--radius-md);
   }
   .lab-layout { grid-template-columns: 1fr !important; }
+  /* Grid children default to min-width:auto, so the wide code editor pushed the
+     track past the viewport and got clipped — half the code was unreachable. */
+  .lab-layout > * { min-width: 0; }
   /* On a phone the editor is tall, so the run button would sit far below the
      fold. Keep it reachable without scrolling back down. */
   .run-bar {
