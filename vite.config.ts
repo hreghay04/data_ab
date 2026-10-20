@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/data_ab/',
+  base: '/data_lab/',
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
