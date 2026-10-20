@@ -2,6 +2,7 @@ import { renderHeader, bindHeaderEvents } from '../components/header';
 import { loadProgress, getCompletedCount, getTotalMissions, exportProgress, importProgress } from '../utils/storage';
 import type { UserProgress } from '../utils/storage';
 import { preloadEngine } from '../engine/python-engine';
+import { activeUniverses, missionsOfUniverse, MISSIONS_META } from '../missions/index';
 
 export function renderHome(): void {
   const app = document.getElementById('app')!;
@@ -69,13 +70,14 @@ export function renderHome(): void {
           </div>
         </section>
 
+        <!-- Badges -->
+        ${renderBadges(progress)}
+
         <!-- Univers -->
         <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;letter-spacing:-0.01em">🗺️ Les univers</h2>
         <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:40px" class="stagger">
-          ${renderUniversCard(1, 'Je découvre mes superpouvoirs numériques', 'Données, tableaux, premiers graphiques et statistiques', ['mission-01', 'mission-02', 'mission-03'], progress)}
-          ${renderUniversCard(2, 'Je mène mes propres enquêtes', 'Premier modèle d\'IA, prédictions et corrélations', ['mission-04', 'mission-05', 'mission-06'], progress)}
-          ${renderUniversCard(3, 'Je construis ma première IA', 'Classification, prédiction et biais', ['mission-07', 'mission-08', 'mission-09'], progress)}
-          ${renderUniversCard(4, 'Mon premier projet data science', 'Choix de sujet, analyse complète et présentation', ['mission-10', 'mission-11', 'mission-12'], progress)}
+          ${activeUniverses().map(u => renderUniversCard(u.num, u.title, u.description,
+              missionsOfUniverse(u.num).map(m => m.id), progress)).join('')}
         </section>
 
         <!-- Actions -->
@@ -93,10 +95,52 @@ export function renderHome(): void {
   preloadEngine();
 }
 
+function renderBadges(progress: UserProgress): string {
+  const earned = new Set(progress.badges);
+  const all = Object.values(MISSIONS_META)
+    .filter(m => m.badge)
+    .map(m => ({ badge: m.badge!, mission: m.title, id: m.id, done: earned.has(m.badge!) }));
+  if (all.length === 0) return '';
+
+  const icons: Record<string, string> = {
+    'Data Detective': '🔍',
+    'Détective des statistiques': '🏅',
+    'Codeuse en herbe': '💻',
+    'Apprentie IA': '🤖',
+    'Chasseuse de corrélations': '🔗',
+    'Analyste prédictive': '📈',
+    'Auditrice d\'algorithmes': '⚖️',
+    'Exploratrice de structures': '🧩',
+  };
+
+  return `
+    <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:6px;letter-spacing:-0.01em">🏅 Mes badges</h2>
+    <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:18px">
+      ${all.filter(b => b.done).length} sur ${all.length} débloqués
+    </p>
+    <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:40px" class="stagger">
+      ${all.map(b => `
+        <div class="card" style="text-align:center;padding:18px 12px;${b.done ? '' : 'opacity:0.4;filter:grayscale(1)'}"
+             title="${b.done ? 'Obtenu en terminant : ' + escapeAttr(b.mission) : 'À débloquer : ' + escapeAttr(b.mission)}">
+          <div style="font-size:2rem;line-height:1.2">${b.done ? (icons[b.badge] || '🏅') : '🔒'}</div>
+          <div style="font-size:0.82rem;font-weight:700;margin-top:6px">${b.done ? b.badge : '???'}</div>
+          <div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:3px">
+            ${b.done ? 'Débloqué' : 'Mission ' + b.id.replace('mission-', '')}
+          </div>
+        </div>
+      `).join('')}
+    </section>
+  `;
+}
+
+function escapeAttr(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
 function renderUniversCard(num: number, title: string, desc: string, missionIds: string[], progress: UserProgress): string {
   const missions = missionIds.map(id => progress.missions[id]).filter(Boolean);
   const completedInUnivers = missions.filter(m => m.status === 'completed').length;
-  const isLocked = num > 1 && missions.every(m => m.status === 'locked');
+  const isLocked = missions.length > 0 && missions.every(m => m.status === 'locked');
   const colors = ['', '#6366f1', '#06b6d4', '#f59e0b', '#10b981'];
   const color = colors[num];
 

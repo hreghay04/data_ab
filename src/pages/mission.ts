@@ -198,6 +198,7 @@ function renderStepContent(step: MissionStep, mode: string, missionId: string): 
           >${escapeHtml(loadProgress().missions[missionId]?.hypothesisText || '')}</textarea>
         ` : ''}
 
+        ${step.type === 'reflect' ? renderHypothesisRecall(missionId) : ''}
         ${step.type === 'complete' ? renderCompletionPanel(missionId) : ''}
       </div>
 
@@ -269,6 +270,30 @@ function renderValidationFeedback(outcome: ValidationOutcome | null): void {
   el.style.borderColor = color;
   el.innerHTML = `<span style="color:${color};font-weight:700">${outcome.ok ? '✅ Étape réussie' : '🔸 Pas encore'}</span>
     <div style="margin-top:4px;font-size:0.86rem;color:var(--text-secondary)">${escapeHtml(outcome.message)}</div>`;
+}
+
+// She writes a prediction at the start of every mission; without this it was
+// stored and never shown again, so the hypothesis never got confronted.
+function renderHypothesisRecall(missionId: string): string {
+  const mp = loadProgress().missions[missionId];
+  const texte = (mp?.hypothesisText || '').trim();
+  if (!texte) return '';
+  const etape = currentMission?.steps.find(s => s.type === 'hypothesis');
+  return `
+    <div style="margin-top:26px;padding:18px 20px;border-radius:var(--radius-md);
+                background:var(--accent-light);border:1px solid rgba(99,102,241,0.15)">
+      <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;
+                  letter-spacing:0.06em;color:var(--accent);margin-bottom:8px">
+        🤔 Ce que tu avais prédit au début
+      </div>
+      ${etape ? `<div style="font-size:0.82rem;color:var(--text-tertiary);margin-bottom:8px">${escapeHtml(etape.title)}</div>` : ''}
+      <blockquote style="margin:0;padding-left:12px;border-left:3px solid var(--accent);
+                         font-size:0.95rem;line-height:1.7;white-space:pre-wrap">${escapeHtml(texte)}</blockquote>
+      <div style="font-size:0.84rem;color:var(--text-secondary);margin-top:12px">
+        Avais-tu vu juste ? Qu'est-ce qui t'a le plus surprise ?
+      </div>
+    </div>
+  `;
 }
 
 function renderCompletionPanel(missionId: string): string {

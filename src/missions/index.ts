@@ -181,6 +181,40 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
   },
 };
 
+export interface Universe {
+  num: number;
+  title: string;
+  emoji: string;
+  description: string;
+}
+
+const UNIVERSES: Universe[] = [
+  { num: 1, title: 'Je découvre mes superpouvoirs numériques', emoji: '✨',
+    description: 'Données, tableaux, premiers graphiques et statistiques' },
+  { num: 2, title: 'Je mène mes propres enquêtes', emoji: '🔍',
+    description: 'Premier modèle d\'IA, prédictions et corrélations' },
+  { num: 3, title: 'Je construis ma première IA', emoji: '🤖',
+    description: 'Classification, clustering et biais algorithmique' },
+  { num: 4, title: 'Mon premier projet data science', emoji: '🎓',
+    description: 'Choix de sujet, analyse complète et présentation' },
+];
+
+export function missionsOfUniverse(num: number): MissionMeta[] {
+  return Object.values(MISSIONS_META)
+    .filter(m => m.universe === num)
+    .sort((a, b) => a.number.localeCompare(b.number));
+}
+
+// Only universes that actually hold missions are shown, so the parcours never
+// advertises a slot that does not exist yet.
+export function activeUniverses(): Universe[] {
+  return UNIVERSES.filter(u => missionsOfUniverse(u.num).length > 0);
+}
+
+export function totalMissions(): number {
+  return Object.keys(MISSIONS_META).length;
+}
+
 export async function loadMission(id: string): Promise<MissionData | null> {
   const meta = MISSIONS_META[id];
   if (!meta) return null;
