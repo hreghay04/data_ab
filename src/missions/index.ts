@@ -179,6 +179,24 @@ export const MISSIONS_META: Record<string, MissionMeta> = {
     ],
     duration: '~55 min',
   },
+  'mission-09': {
+    id: 'mission-09',
+    number: '09',
+    universe: 4,
+    title: 'Mon enquête Pokémon',
+    description: 'Ta première enquête en autonomie : 88 Pokémon, leurs vraies stats, et une question — qu\'est-ce qui fait un Pokémon fort ? À toi de mener le projet.',
+    badge: 'Maîtresse des données',
+    xp: 100,
+    dataset: 'pokemon.csv',
+    datasetSource: 'Statistiques de base canoniques des jeux Pokémon (données réelles, vérifiables) pour 88 Pokémon de la génération 1 à 7.',
+    objectives: [
+      'Mener une enquête de données complète en autonomie',
+      'Enchaîner question, exploration, visualisation, nuance et conclusion',
+      'Repérer le piège d\'une moyenne calculée sur peu de cas',
+      'Produire un graphique présentable de bout en bout',
+    ],
+    duration: '~70 min',
+  },
 };
 
 export interface Universe {

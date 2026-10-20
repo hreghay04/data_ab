@@ -80,6 +80,15 @@ export const REAL_WORLD: Record<string, RealWorld> = {
     ],
     metier: 'Data scientist exploratoire — faire parler des données que personne n\'a encore lues.',
   },
+  'mission-09': {
+    accroche: 'Tu viens de faire, en autonomie, exactement ce qu\'une data scientist fait devant un jeu de données inconnu : poser une question, enquêter, nuancer, conclure. Le sujet était ludique ; la démarche est celle du métier.',
+    usages: [
+      { domaine: 'Jeux vidéo', emoji: '🎮', texte: 'Les studios analysent les données de jeu pour équilibrer les personnages, qu\'aucun ne soit trop fort ni inutile. C\'est littéralement ce que tu viens de faire sur les Pokémon.' },
+      { domaine: 'Sport de haut niveau', emoji: '🏅', texte: 'Repérer les profils atypiques et les compromis force/vitesse : les cellules data des clubs font cette analyse sur des athlètes.' },
+      { domaine: 'N\'importe quel métier', emoji: '🔎', texte: 'La démarche — question, données, nuance, conclusion — est la compétence la plus transférable qui soit : un produit, une maladie, une élection, un climat.' },
+    ],
+    metier: 'Data scientist — et, au fond, toute personne qui décide avec des preuves plutôt qu\'avec des intuitions.',
+  },
 };
 
 export function renderRealWorld(missionId: string): string {

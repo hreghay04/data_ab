@@ -10,7 +10,7 @@ let datasets: Record<string, string> = {};
 const DEFAULT_CODE = `import pandas as pd
 import matplotlib.pyplot as plt
 
-# Charge un dataset (kpop.csv, tennis.csv, chats.csv ou mangas.csv)
+# Datasets : kpop, tennis, chats, mangas, metiers, candidats, pokemon
 df = pd.read_csv("kpop.csv")
 
 # Explore !
@@ -37,7 +37,7 @@ export async function renderLabo(): Promise<void> {
   destroyEditor();
   const app = document.getElementById('app')!;
 
-  for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv', 'metiers.csv', 'candidats.csv']) {
+  for (const name of ['kpop.csv', 'tennis.csv', 'chats.csv', 'mangas.csv', 'metiers.csv', 'candidats.csv', 'pokemon.csv']) {
     try { datasets[name] = await loadDataset(name); } catch {}
   }
 
@@ -65,6 +65,7 @@ export async function renderLabo(): Promise<void> {
               <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">tennis.csv</code>
               <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">chats.csv</code>
               <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">mangas.csv</code>
+              <code style="background:var(--bg-tertiary);padding:2px 8px;border-radius:4px;font-size:var(--text-xs)">pokemon.csv</code>
             </div>
             <div id="cm-labo-container" style="flex:1;min-height:400px;display:flex;flex-direction:column"></div>
             <div style="display:flex;gap:8px" class="run-bar">
