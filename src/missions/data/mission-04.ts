@@ -95,18 +95,9 @@ df = pd.read_csv("mangas.csv")
 
 **L'idée en une phrase :** pour deviner le genre d'un nouveau manga, on regarde les **k mangas qui lui ressemblent le plus**, et on prend le genre majoritaire parmi eux.
 
-**Exemple concret.** Un nouveau manga : action 8, romance 2, violence 9.
-Ses 5 voisins les plus proches dans le dataset sont :
+**Exemple concret.** Un nouveau manga : action 8, romance 2, violence 9. Voici ce que « voir ses voisins » veut dire.
 
-| Voisin | Genre |
-|---|---|
-| Berserk | Seinen |
-| Vagabond | Seinen |
-| Gantz | Seinen |
-| Tokyo Ghoul | Seinen |
-| Demon Slayer | Shonen |
-
-→ 4 Seinen contre 1 Shonen. **Prédiction : Seinen.**
+[[fig:knn]]
 
 **« Proche », ça veut dire quoi ?** On mesure la distance comme au collège, avec Pythagore, mais en 3 dimensions :
 

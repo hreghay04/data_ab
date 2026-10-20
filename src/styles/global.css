@@ -638,6 +638,24 @@ img { max-width: 100%; display: block; }
   margin-top: 8px;
 }
 
+/* Explanatory figures */
+.fig {
+  margin: 20px 0;
+  padding: 18px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  /* SVG label text shrinks with the viewBox, so below this width the diagram
+     becomes unreadable — let it scroll inside its own box instead. */
+  overflow-x: auto;
+}
+.fig svg {
+  width: 100%;
+  min-width: 440px;
+  height: auto;
+  display: block;
+}
+
 /* ==========================================
    ANIMATION UTILITIES
    ========================================== */

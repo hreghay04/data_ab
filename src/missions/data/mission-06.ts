@@ -113,6 +113,8 @@ salaire = pente × années_d'études + ordonnée_à_l'origine
 
 **Comment la machine choisit-elle « la meilleure » droite ?** Pour chaque droite possible, on mesure l'erreur : la distance verticale entre chaque point réel et la droite. On élève ces écarts au carré (pour que les erreurs négatives ne compensent pas les positives), puis on les additionne. **La meilleure droite est celle qui rend cette somme la plus petite possible.**
 
+[[fig:regression]]
+
 C'est tout. Ça s'appelle la *méthode des moindres carrés*, inventée par Gauss il y a plus de deux siècles, et c'est encore aujourd'hui la base d'une bonne partie de l'économie et de l'IA.
 
 En Python, numpy fait le calcul en une ligne :

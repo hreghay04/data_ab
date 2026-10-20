@@ -47,7 +47,9 @@ Prends le temps sur celle-là. Dans tout ce que tu as fait jusqu'ici, tu pouvais
 3. **Déplace** chaque centre au milieu des titres qui viennent de lui être attribués.
 4. **Recommence** les étapes 2 et 3 jusqu'à ce que plus rien ne bouge.
 
-C'est tout. Les centres se repositionnent progressivement au cœur des zones denses du nuage, et les groupes se stabilisent.
+[[fig:kmeans]]
+
+Les centres se repositionnent progressivement au cœur des zones denses du nuage, et les groupes se stabilisent.
 
 **Comment mesurer la qualité d'un découpage ?** On additionne les distances au carré entre chaque point et le centre de son groupe. Ce nombre s'appelle l'**inertie**. Plus elle est faible, plus les groupes sont compacts.
 

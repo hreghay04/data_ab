@@ -134,7 +134,11 @@ Le modèle va donc apprendre, très efficacement, à être injuste de la même f
 
 Cette idée a un nom en recherche — *fairness through unawareness*, l'équité par l'ignorance — et on sait depuis longtemps qu'**elle ne marche pas**. La raison est simple : dans des données réelles, une variable sensible laisse presque toujours des traces dans d'autres variables qui, elles, restent visibles.
 
-Ces traces s'appellent des **variables proxy**. Tu vas en démasquer une.`,
+Ces traces s'appellent des **variables proxy**.
+
+[[fig:proxy]]
+
+Tu vas en démasquer une.`,
   },
   {
     type: 'code',

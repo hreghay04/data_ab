@@ -43,6 +43,8 @@ Note ta réponse. C'est exactement la question qui occupera la deuxième moitié
 - **r proche de 0** : aucun lien
 - **r proche de −1** : quand l'une monte, l'autre descend
 
+[[fig:correlation]]
+
 En pandas, c'est une seule ligne : \`df['colonne_a'].corr(df['colonne_b'])\`.`,
     code: {
       decouverte: `import pandas as pd

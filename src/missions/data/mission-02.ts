@@ -41,6 +41,8 @@ Note ton ressenti — tu verras comment la présentation change tout.`,
 → **Moyenne** : 11.3 aces (le match fou tire tout vers le haut)
 → **Médiane** : 7 aces (reflète mieux la réalité habituelle)
 
+[[fig:moyenne-mediane]]
+
 Quand tu lis "en moyenne", demande-toi toujours : **y a-t-il des valeurs extrêmes qui faussent le calcul ?**`,
   },
   {
@@ -103,7 +105,11 @@ df = pd.read_csv("tennis.csv")
   {
     type: 'code',
     title: 'L\'art du graphique trompeur',
-    content: `Un même classement peut paraître écrasant ou serré selon comment tu dessines les axes. Compare ces deux versions.`,
+    content: `Un même classement peut paraître écrasant ou serré selon comment tu dessines les axes.
+
+[[fig:axe-tronque]]
+
+Compare maintenant ces deux versions en les traçant toi-même.`,
     code: {
       decouverte: `import pandas as pd
 import matplotlib.pyplot as plt

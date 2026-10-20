@@ -5,6 +5,7 @@ import type { MissionData, MissionStep } from '../missions/index';
 import { initEngine, runPython, onStatusChange, resetEngine, preloadEngine } from '../engine/python-engine';
 import { createCodeEditor, getEditorCode, setEditorCode, destroyEditor } from '../components/code-editor';
 import { renderEngineBoot, bindEngineBoot } from '../components/engine-boot';
+import { injectFigures } from '../components/diagrams';
 import { renderPlotArea, showPlot, hidePlot, bindPlotExport, slugify } from '../components/plot-export';
 
 let currentMission: MissionData | null = null;
@@ -533,7 +534,7 @@ function escapeHtml(str: string): string {
 }
 
 function markdownLite(text: string): string {
-  return text
+  const out = text
     .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre style="background:var(--bg-code);color:var(--text-on-dark);padding:12px;border-radius:var(--radius-md);overflow-x:auto;font-size:var(--text-sm);margin:8px 0"><code>$2</code></pre>')
     .replace(/`([^`]+)`/g, '<code style="background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;font-size:0.88em">$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -541,4 +542,5 @@ function markdownLite(text: string): string {
     .replace(/^- (.+)/gm, '<li style="margin-left:16px">$1</li>')
     .replace(/\n\n/g, '</p><p style="margin:8px 0">')
     .replace(/\n/g, '<br>');
+  return injectFigures(out);
 }
